@@ -1,8 +1,16 @@
+"""
+Collection of functions to read the specific set of data I have been provided 
+and return cube lists of as near identical format as I can reasonably manage
+
+The actually useful function 'read_data' is right at the end
+"""
 
 import iris
 iris.FUTURE.cell_datetime_objects=True
 import numpy as np
 import datetime
+from iris.unit import Unit
+from iris.coord_systems import GeogCS
 
 from re_name_vars import change_names_from_CF, re_name_to_CF
 
@@ -50,19 +58,32 @@ def ECAN_pressure_units_fix(cubelist):
     Changes the units of cube of pressure within cubelist if it is there
     :param cubelist: list of cubes
     """
-    cube = cubelist.extract(iris.Constraint(name = 'P'))
-    if cube:
-        cube.convert_units('Pa')
+    cubeset = cubelist.extract(iris.Constraint(name = 'P'))
+    if cubeset:
+        for cube in cubeset:
+            cube.convert_units('Pa')
     
    
 def ECAN_humidity_units_fix(cubelist):
     """
-        Changes the units of cube of hunidity within cubelist if it is there
-        :param cubelist: list of cubes
-        """
-    cube = cubelist.extract(iris.Constraint(name = 'Q'))
-    if cube:
-        cube.convert_units('kg/kg')
+    Changes the units of cube of hunidity within cubelist if it is there
+    :param cubelist: list of cubes
+    """
+    cubeset = cubelist.extract(iris.Constraint(name = 'Q'))
+    if cubeset:
+        for cube in cubeset:
+            cube.convert_units('kg kg-1')
+            
+
+def sonde_height_units_fix(cubelist):
+    """
+    Changes the units of cube of height within cubelist if it is there
+    :param cubelist: list of cubes
+    """
+    cubeset = cubelist.extract(iris.Constraint(name = 'nonCoordinateGeopotentialHeight'))
+    if cubeset:
+        for cube in cubeset:
+            cube.convert_units('m')
 
 
 def select_lead_time(cubelist, time, lead_time):
@@ -89,9 +110,13 @@ def select_lead_time(cubelist, time, lead_time):
     return iris.cube.CubeList(new_list)
     
     
-def add_ECAN_metadata(filepath, filename, cubelist_original):
-    
-    cubelist = cubelist_original.copy()
+def add_ECAN_metadata(filepath, filename, cubelist_original, a = 6371229.0):
+    # metadata for these cubes is stored in an annoying format
+    # this function converts it to that identical to the UKMO  
+    # a is the radius of earth as read from the GeogCS used for lat & lon with the ukmo data I am looking at
+
+    #cubelist = cubelist_original.copy()
+    cubelist = cubelist_original
     
     metalist = iris.load(filepath+filename, ['AN_TIME', 'LAT', 'LON'])
     
@@ -102,14 +127,15 @@ def add_ECAN_metadata(filepath, filename, cubelist_original):
     month = int(T[4]+T[5])
     day = int((T[6]+T[7]))
     hour = int((T[9]+T[10]))
+    # reads times from string
     
     time = datetime.datetime(year, month, day, hour) - datetime.datetime(1970, 1, 1)
-    t_hours = time.days*24
+    t_hours = float(time.days*24)
     # convert this list of strings into an interpretable object
     
-    tm = iris.coords.AuxCoord(t_hours, long_name = 'time', units=Unit('hours since 1970-01-01 00:00:00', calendar='gregorian'))
-    lat = iris.coords.AuxCoord(metacube[1].data, long_name = 'Latitude', units = 'degrees_north')
-    lon = iris.coords.AuxCoord(metacube[2].data, long_name = 'Longitude', units = 'degrees_east')
+    tm = iris.coords.DimCoord(t_hours, standard_name = 'time', units=Unit('hours since 1970-01-01 00:00:00', calendar='gregorian'))
+    lat = iris.coords.DimCoord(metalist[1].data, standard_name = 'latitude', units = 'degrees', coord_system=GeogCS(a))
+    lon = iris.coords.DimCoord(metalist[2].data, standard_name = 'longitude', units = 'degrees', coord_system=GeogCS(a))
     # create coordinates
     
     for cube in cubelist:
@@ -119,6 +145,71 @@ def add_ECAN_metadata(filepath, filename, cubelist_original):
         cube.add_aux_coord(lon)
         
     return cubelist
+
+
+def add_sonde_metadata(cubelist_original, a = 6371229.0):
+    # metadata for these cubes is stored as attributes
+    # this function converts it to coordinates as in the UKMO
+    # a is the radius of earth as read from the GeogCS used for lat & lon with the ukmo data I am looking at
+    
+    #cubelist = cubelist_original.copy()
+    cubelist = cubelist_original
+    
+    cube = cubelist[0]
+    # all cubes in cubelist should have the same metadata in this regard
+    
+    T = cube.attributes['launchTime']
+    # string detailing the time of launch
+    
+    year = int(T[:4])
+    month = int(T[5:7])
+    day = int((T[8:10]))
+    hour = int((T[11:13]))
+    # reads times from string
+    
+    t = np.mod(hour, 6)
+    # hours after one of the 6-hourly verification times, 00, 06, 12 or 18 UTC
+    time = datetime.datetime(year, month, day, hour) + datetime.timedelta(hours = (3-np.abs(t-3))*np.sign(t-2.5))
+    # create datetime object rounded to the nearest verification time
+    # subtracts (t<3) or adds (t>=3) hours to nearest 6
+    # if this doesn't make sense to you get a pen & paper and work it out 
+    
+    time_elapsed = time - datetime.datetime(1970, 1, 1)
+    # convert to appropriate units
+    t_hours = float(time_elapsed.days*24)
+    # convert this list of strings into an interpretable object
+    
+    tm = iris.coords.DimCoord(t_hours, standard_name = 'time', units=Unit('hours since 1970-01-01 00:00:00', calendar='gregorian'))
+    lat = iris.coords.DimCoord(cube.attributes['stationLatitude'], standard_name = 'latitude', units = 'degrees', coord_system=GeogCS(a))
+    lon = iris.coords.DimCoord(cube.attributes['stationLongitude'], standard_name = 'longitude', units = 'degrees', coord_system=GeogCS(a))
+    # create coordinates
+    
+    for cube in cubelist:
+        
+        cube.add_aux_coord(tm)
+        cube.add_aux_coord(lat)
+        cube.add_aux_coord(lon)
+        
+    return cubelist
+    
+    
+def make_alt_cube(test_cube):
+    """
+    Create a cube of altitude from UKMO with same format as the other variables
+    :param test_cube: an example cube with altitude as a dimension coordinate
+    :return: cube of altitude
+    """
+    
+    alt = test_cube.copy()
+    
+    alt_coord = test_cube.coord('altitude')
+    
+    alt.data = alt_coord.points
+    alt.standard_name = alt_coord.standard_name
+    alt.units = alt_coord.units
+    alt.var_name = alt_coord.var_name
+    
+    return alt
 
 
 def read_data(source, station_number, time, cf_variables = None, model = None, lead_time = 0):
@@ -133,7 +224,7 @@ def read_data(source, station_number, time, cf_variables = None, model = None, l
     :param lead_time: time in days before the verification time that the forecast was started
     :return: CubeList containing the specified variables
     """
-    if model == None:
+    if model == None or model == 'sonde':
         
         filepath = sonde_filepath(source)
         model = 'sonde'
@@ -155,34 +246,28 @@ def read_data(source, station_number, time, cf_variables = None, model = None, l
         cubelist = UKMO_pressure_double_fix(cubelist)
         # This line is necessary, as the files contain two cubes of air_pressure
         # we desire the one on the same number of levels as theta and humidity
-        cubelist = select_lead_time(cubelist, lead_time)
+        cubelist = select_lead_time(cubelist, time, lead_time)
         
-        cubelist.append(make_alt_cube(cubelist[0]))
-        # MAKE THIS LINE BETTER
+        if 'altitude' in variables:
+            
+            cubelist.append(make_alt_cube(cubelist[0]))
+            # make cube of altitude & add to list, bacause for UKMO altitude is a coordinate
         
     elif model == 'ECAN':
         
         ECAN_pressure_units_fix(cubelist)
         ECAN_humidity_units_fix(cubelist)
         # ensure that the units are uniform from all three data sources
-        
+            
         cubelist = add_ECAN_metadata(filepath, filename, cubelist)
+        
+    else: #else it's sonde
+    
+        sonde_height_units_fix(cubelist)
+        
+        cubelist = add_sonde_metadata(cubelist)
 
     cubelist = re_name_to_CF(cubelist, model)
     # then re-name all the cubes according to CF conventions for uniformity
 
     return cubelist
-    
-def make_alt_cube(test_cube):
-    # make a cube of altitude from UM data where it is the vertical coordinate
-    
-    alt = test_cube.copy()
-    
-    alt_coord = alt.coord('altitude')
-    
-    alt.data = alt_coord.points
-    alt.standard_name = alt_coord.standard_name
-    alt.units = alt_coord.units
-    alt.var_name = alt_coord.var name
-    
-    return alt
