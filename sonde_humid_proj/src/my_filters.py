@@ -1,3 +1,7 @@
+"""
+Collection of functions to smooth arrays and cubes with filters
+"""
+
 from __future__ import division
 
 from scipy.signal import savgol_filter
@@ -6,6 +10,28 @@ import numpy as np
 import random
 import matplotlib.pyplot as plt
 #import Sophie_code.write_all_regions as swar
+
+
+def filter_cubelist(cubelist_original, filter_dic):
+    """
+    Apply chosen filter to data in all cubes in CubeList
+    :param cubelist_original: list of cubes whose data are to be filtered
+    :param filter_dic: dictionary specifying filter name and necessary parameters
+    :return: CubeList of cubes with smoothed data fields
+    """
+
+    cubelist = cubelist_original
+#    cubelist = cubelist_original.copy()
+
+    for cube in cubelist:
+        
+        if cube.shape == (1,) or cube.shape == ():
+            # these cubes do not have dimension
+            pass
+        else:            
+            cube.data = my_filter(cube.data, filter_dic)
+
+    return cubelist
 
 def my_filter(array, filter_dic):
     """
@@ -21,7 +47,7 @@ def my_filter(array, filter_dic):
 
     elif filter_dic['name'] == 'kernel':
 
-        return kernel_filter(array, filter_dic['gaussion_half_width'])
+        return kernel_filter(array, filter_dic['gaussian_half_width'])
 
     else:
 
@@ -61,7 +87,6 @@ def smooth_equal_intervals(array, d):
     #:return: filtered array
 
     weights = tenm_weights(d)
-    print weights
     new_arr = []
     lena = len(array)
 
@@ -87,7 +112,7 @@ def smooth_equal_intervals(array, d):
         
         new_arr.append(sum(array[i - hw : i + hw + 1] * newweights))
 
-    return new_arr
+    return np.array(new_arr)
 
 # sophie's original stuff
 #    for i in range(len(Theta)):
@@ -112,7 +137,7 @@ def smooth_equal_intervals(array, d):
 def test_filter():
     # tests filters using sinusoid with added noise
     
-    kernel_dic = {'name' : 'kernel', 'gaussion_half_width' : 50} 
+    kernel_dic = {'name' : 'kernel', 'gaussian_half_width' : 50} 
     
     savgol_dic = {'name' : 'savgol', 'window' : 21, 'order' : 3}
     
@@ -136,6 +161,16 @@ def test_filter():
     plt.plot(yg, label = 'Savitsky-Golay')
     plt.legend()
     plt.title('Profile smoothing using window of 21 points (for kernel, gaussian half-width = 5 points, 2 half widths either side)')
+    plt.show()
+    
+    xk = my_filter(x, kernel_dic)
+    xg = my_filter(x, savgol_dic)
+    
+    plt.figure(figsize = (12, 8))
+    plt.plot(x, label = 'original')
+    plt.plot(xk, label = 'kernel_smooth')
+    plt.plot(xg, label = 'Savitsky-Golay')
+    plt.legend()
     plt.show()
     
     

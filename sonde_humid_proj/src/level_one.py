@@ -1,10 +1,18 @@
 
 import iris
+import numpy as np
 
 from read_files import read_data
 import calculate
 from re_grid import re_grid_1d
-from my_filters import my_filter
+from my_filters import my_filter, filter_cubelist
+
+import sys
+# Add the parent folder path to the sys.path list
+sys.path.append('..')
+
+from plot.temperature_profiles import temperature_profile_comparison_plot
+
 
 def temperature_cube(cubelist):
     """
@@ -16,7 +24,7 @@ def temperature_cube(cubelist):
     pressure = cubelist.extract(iris.Constraint(name='air_pressure'))[0]
     # [0] required as cubelist.extract returns a cube list
 
-    temp = calculate.temp_from_theta(theta, pressure)
+    temp = calculate.temp_from_theta(theta.data, pressure.data)
 
     temperature = theta.copy()
     temperature.standard_name = 'air_temperature'
@@ -33,21 +41,23 @@ def trop_height(cubelist, filter_dic, kind = 'linear'):
     :param kind: integer specifying the order of the spline interpolator to use, default is linear
     :return: cube of tropopause height in metres
     """
-    temp = cubelist.extract(iris.Constraint(name='air_temperature'))[0]
+    temp = cubelist.extract(iris.Constraint(name='air_temperature'))
     altitude = cubelist.extract(iris.Constraint(name='altitude'))[0]
-    # [0] required as cubelist.extract returns a cube list
+    # [0] required for altitude as cubelist.extract returns a cube list
 
-    uniform_height_temp = re_grid_1d(temp, altitude, 0, 20000, 10, kind)
+    uniform_height_temp = re_grid_1d(temp, altitude, 0, 20001, 10, kind)[0]
     # re-grid temp to 10m in vertical to 20km
+    # [0] required as it returns a cube list
     filtered_temp = my_filter(uniform_height_temp.data, filter_dic)
     # filter to smooth out noise
-    trop_alt = calculate.tropopause_height(filtered_temp, range(0, 20000, 10))
-    # calculate tropopause altitude
+    trop_alt = calculate.tropopause_height(filtered_temp, np.array(range(0, 20001, 10)))[0]
+    print trop_alt
+    # calculate tropopause altitude, only taking the first returned valie
     return iris.cube.Cube(trop_alt, standard_name = 'tropopause_altitude', units = 'm',
-            aux_coords_and_dims = [(temp.coord('latitude'), None), (temp.coord('longitude'), None), (temp.coord('time'), None)])
+            aux_coords_and_dims = [(altitude.coord('latitude'), None), (altitude.coord('longitude'), None), (altitude.coord('time'), None)])
 
 
-def process_single_ascent(source, station_number, time, type, filter_dic, lead_time = 0, kind = 'linear'):
+def process_single_ascent(source, station_number, time, dtype, filter_dic, lead_time = 0, kind = 'linear'):
     """
     File to do the stuff
     :param source: Code representing origin of data, options for which are: 'EMN', 'CAN', 'DLR', 'IMO', 'NCAS'
@@ -62,9 +72,9 @@ def process_single_ascent(source, station_number, time, type, filter_dic, lead_t
     variables = ['air_pressure', 'air_temperature', 'air_potential_temperature', 'dew_point_temperature', 'specific_humidity', 'altitude']
     # not all types will have all variables, this will be dealt with later
 
-    cubelist = read_data(source, station_number, time, variables, type, lead_time)
+    cubelist = read_data(source, station_number, time, variables, dtype, lead_time)
 
-    if type == 'UKMO':
+    if dtype == 'UKMO':
         # files do not have a temperature field, so we must calculate one
         cubelist.append(temperature_cube(cubelist))
 
@@ -74,19 +84,22 @@ def process_single_ascent(source, station_number, time, type, filter_dic, lead_t
     # calculate the tropopause height
     # add trop_height_m as cube to list
 
-    altitude = cubelist.extract(iris.Constraint(name = 'altitude'))
-    trop_alt = cubelist.extract(iris.Constraint(name = 'tropopause_altitude'))
-    altitude.data -= trop_alt.data
+    altitude = cubelist.extract(iris.Constraint(name = 'altitude'))[0]
+    trop_alt = cubelist.extract(iris.Constraint(name = 'tropopause_altitude'))[0]
+    print altitude
+    dummy_altitude = altitude.data - trop_alt.data
+    altitude.data = dummy_altitude
     # subtract trop_height_m from altitude data
 
-    cubelist_reg = re_grid_1d(cubelist, altitude, -10000, 10000, 10)
+    cubelist_reg = re_grid_1d(cubelist, altitude, -10000, 10001, 10, kind)
     # re-grid all variables to 10m spacing +/- 10km of tropopause
     # re-gridding the original temperature as opposed to the previously filtered one
 
-    
+    cubelist_smooth = filter_cubelist(cubelist_reg, filter_dic)
     # filter all variables
 
+    temperature_profile_comparison_plot(cubelist, cubelist_reg, cubelist_smooth, kind, filter_dic)
     # produce a plot comparing all 5(?) different temperature profiles & showing calculated trop height
 
-    #
+    return cubelist_smooth
 

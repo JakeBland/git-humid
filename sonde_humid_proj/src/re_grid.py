@@ -1,3 +1,7 @@
+"""
+Collection of functions to re-grid data to specified uniform height scale
+"""
+
 import iris
 from scipy.interpolate import interp1d
 
@@ -26,13 +30,19 @@ def re_grid_1d(variables, dimension, lower, upper, spacing, kind = 'linear'):
 
     for cube in variables:
 
-        interp_2_new_dim = interp1d(dimension.data, cube.data, kind, bounds_error = False)
-        new_data = interp_2_new_dim(new_dimension)
-        # interpolate to new dimension array
+        if cube.shape == (1,) or cube.shape == ():
+            # these cubes do not have dimension
+            new_cubes.append(cube)
+            # just add them to new cube
+        else:
 
-        new_cubes.append(iris.cube.Cube(new_data, standard_name=cube.standard_name, long_name=cube.long_name,
+            interp_2_new_dim = interp1d(dimension.data, cube.data, kind, bounds_error = False)
+            new_data = interp_2_new_dim(new_dimension)
+            # interpolate to new dimension array
+
+            new_cubes.append(iris.cube.Cube(new_data, standard_name=cube.standard_name, long_name=cube.long_name,
                                   var_name=cube.var_name, units=cube.units, attributes=cube.attributes,
                                   dim_coords_and_dims=[(new_dim, 0)], aux_coords_and_dims=[(lat,None), (lon,None), (time,None)]))
-         # create cube of new interpolated variable on new dimcoord and append to list
+             # create cube of new interpolated variable on new dimcoord and append to list
 
     return new_cubes

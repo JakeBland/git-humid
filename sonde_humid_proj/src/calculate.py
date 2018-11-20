@@ -1,3 +1,6 @@
+"""
+Collection of functions to carry out necessary calculations of meteorological values
+"""
 
 import numpy as np
 
@@ -46,4 +49,3 @@ def tropopause_height(T, Z):
     return np.nan, Gamma
     # if there are no layers which satisfy the condition in the profile, return nan
     
-def
