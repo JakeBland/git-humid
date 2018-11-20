@@ -4,6 +4,8 @@ Collection of functions to carry out necessary calculations of meteorological va
 
 import numpy as np
 
+import matplotlib.pyplot as plt
+
 def temp_from_theta(theta, pressure, R = 8.31446, cp = 29.07):
     """
     Calculate air_temperature from potential temperature and pressure
@@ -30,20 +32,28 @@ def tropopause_height(T, Z):
     """
     Calculate the tropopause height by WMO definition
     :param T: array of temperature (K)
-    :param Z: corresponding array of altitude (m)
+    :param Z: corresponding array of altitude (m) (assumed to be uniform in vertical for the 2km mean)
     :return: Tropopause height (number, in metres), and optionally also the array of lapse rate (K/km)
     """
     Z2 = Z[1:-1]
     
     Gamma = 1e3*(T[:-2] - T[2:])/(Z[2:] - Z[:-2])
     
-    for index in np.nonzero((Gamma <= 2))[0]:
-        # for all individual points at which the lapse rate is less than 2 K/km                
-        index_2 = np.nonzero((Z2 > Z2[index] + 2e3))[0][0]
-        # the index of the lowest point at least 2km above the current point
-        print index_2        
-        if np.average(Gamma[index:index_2+1], weights = (Z[index+2:index_2+3] - Z[index:index_2+1])/2) <= 2:
+    for index in np.nonzero((Gamma <= 2) * (Z2 >= 5000) * (Z2 <= 22000))[0]:
+        # for all individual points at which the lapse rate is less than 2 K/km, between 5km & 22km (Xian 2018) 
+
+        if Z2[-1] < Z2[index] + 2e3:
+            index_2 = -1
+            # if there is no point 2km above current, take the highest available
+        else:
+            index_2 = np.nonzero((Z2 >= Z2[index] + 2e3))[0][0]
+            # the index of the lowest point at least 2km above the current point
+        
+        #if np.average(Gamma[index:index_2+1], weights = (Z[index+2:index_2+3] - Z[index:index_2+1])/2) <= 2:
+        # this doesn't work with nans
+        if np.nanmean(Gamma[index:index_2+1]) <= 2:
             # if the average lapse rate between these layers is also less than 2 K/km
+            # this assumes that all values are equally weighted - i.e. that height is uniform in vertical
             return Z2[index], Gamma
             
     return np.nan, Gamma

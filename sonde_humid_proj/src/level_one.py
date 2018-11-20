@@ -86,7 +86,6 @@ def process_single_ascent(source, station_number, time, dtype, filter_dic, lead_
 
     altitude = cubelist.extract(iris.Constraint(name = 'altitude'))[0]
     trop_alt = cubelist.extract(iris.Constraint(name = 'tropopause_altitude'))[0]
-    print altitude
     dummy_altitude = altitude.data - trop_alt.data
     altitude.data = dummy_altitude
     # subtract trop_height_m from altitude data
@@ -101,5 +100,5 @@ def process_single_ascent(source, station_number, time, dtype, filter_dic, lead_
     temperature_profile_comparison_plot(cubelist, cubelist_reg, cubelist_smooth, kind, filter_dic)
     # produce a plot comparing all 5(?) different temperature profiles & showing calculated trop height
 
-    return cubelist_smooth
+    # if dtype == sonde calculate specific humidity and add to sonde cubelist
 
