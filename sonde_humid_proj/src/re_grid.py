@@ -12,7 +12,6 @@ def re_grid_1d(variables, dimension, lower, upper, spacing, kind = 'linear'):
     :param kind: integer specifying the order of the spline interpolator to use, default is linear
     :return: list of cubes of new variables
     """
-
     new_dimension = range(lower, upper+1, int(spacing))
     # create evenly spaced array for new dimension
 
