@@ -5,6 +5,8 @@ Collection of functions to re-grid data to specified uniform height scale
 import iris
 from scipy.interpolate import interp1d
 
+from process_data import process_single_ascent
+
 def re_grid_1d(variables, dimension, lower, upper, spacing, kind = 'linear'):
     """
     Take a set of variables defined along a dimension and re-grid them to a uniform scale
@@ -46,3 +48,68 @@ def re_grid_1d(variables, dimension, lower, upper, spacing, kind = 'linear'):
              # create cube of new interpolated variable on new dimcoord and append to list
 
     return new_cubes
+
+
+def re_grid_trop_0(source, station_number, time, filter_dic, kind = 'linear'):
+    """
+    Take data from all sources
+    :param source: Code representing origin of data, options for which are: 'EMN', 'CAN', 'DLR', 'IMO', 'NCAS'
+    :param station_number: string, 4-6 digit identifier of particular station from which sonde was released
+    :param time: datetime object of the time of the release of the sonde
+    :param flag: number, 0 when things are working well, and asigned to a number when somthing goes wrong
+    :param filter_dic: dictionary specifying filter name and necessary parameters
+    :param kind: integer specifying the order of the spline interpolator to use, default is linear
+    :return:
+    """
+
+    sonde, flag_sonde = process_single_ascent(source, station_number, time, 'sonde', filter_dic, 0)
+    ukmo, flag_ukmo = process_single_ascent(source, station_number, time, 'UKMO', filter_dic, 0)
+    ukmo1 = process_single_ascent(source, station_number, time, 'UKMO', filter_dic, 0, lead_time = 1)[0]
+    ukmo3 = process_single_ascent(source, station_number, time, 'UKMO', filter_dic, 0, lead_time=3)[0]
+    ukmo5 = process_single_ascent(source, station_number, time, 'UKMO', filter_dic, 0, lead_time=5)[0]
+    ecan, flag_ecan = process_single_ascent(source, station_number, time, 'ECAN', filter_dic, 0)
+
+    trop_const = iris.Constraint(name = 'tropopause_altitude')
+    alt_const = iris.Constraint(name = 'altitude')
+
+    trop_alt = sonde.extract(trop_const)[0].data
+
+    if flag_sonde:
+
+        sonde_top = sonde.extract(alt_const)[0].data[-1]
+        print(source + '_' + station_number + '_' + time.strftime('%Y%m%d_%H%M') + ' sonde could not identify tropopause ' +
+              'below 2km below top of profile. \n Top of profile - ' + str(sonde_top) + ' m, tropopause found at - ' +
+              str(trop_alt) + ' m. \n Instead trying to find tropopause from UKMO data.')
+
+        trop_alt = ukmo.extract(trop_const)[0].data
+
+        if flag_ukmo:
+
+            ukmo_top = ukmo.extract(alt_const)[0].data[-1]
+            print(source + '_' + station_number + '_' + time.strftime('%Y%m%d_%H%M') + ' sonde could not identify tropopause ' +
+                  'below 2km below top of profile. \n Top of profile - ' + str(ukmo_top) + ' m, tropopause found at - ' +
+                  str(trop_alt)+ ' m. \n Instead trying to find tropopause from ECAN data.')
+
+            trop_alt = ecan.extract(trop_const)[0].data
+
+            if flag_ecan:
+
+                ecan_top = ecan.extract(alt_const)[0].data[-1]
+                print(source + '_' + station_number + '_' + time.strftime('%Y%m%d_%H%M') + ' sonde could not identify tropopause ' +
+                      'below 2km below top of profile. \n Top of profile - ' + str(ukmo_alt.data[-1]) + ' m, tropopause found at - ' +
+                      str(trop_alt) + ' m. \n Due to lack of tropopause found, this profile cannot be used')
+
+                return False
+
+    cubelistlist = [sonde, ukmo, ukmo1, ukmo3, ukmo5, ecan]
+
+    for cubelist in cubelistlist:
+
+        altitude = cubelist.extract(alt_const)[0]
+
+        altitude.data = altitude.data - trop_alt
+
+        cubelist = re_grid_1d(cubelist, altitude, -10000, 10000, 10, kind)
+
+
+    return cubelistlist

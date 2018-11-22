@@ -28,11 +28,12 @@ def theta_from_temp(temperature, pressure, R = 8.31446, cp = 29.07):
     """
     return temperature*((pressure/1e5)**(-R/cp))
 
-def tropopause_height(T, Z):
+def tropopause_height(T, Z, flag):
     """
     Calculate the tropopause height by WMO definition
     :param T: array of temperature (K)
     :param Z: corresponding array of altitude (m) (assumed to be uniform in vertical for the 2km mean)
+    :param flag:
     :return: Tropopause height (number, in metres), and optionally also the array of lapse rate (K/km)
     """
     Z2 = Z[1:-1]
@@ -44,6 +45,7 @@ def tropopause_height(T, Z):
 
         if Z2[-1] < Z2[index] + 2e3:
             index_2 = -1
+            flag = 1
             # if there is no point 2km above current, take the highest available
         else:
             index_2 = np.nonzero((Z2 >= Z2[index] + 2e3))[0][0]
@@ -51,11 +53,13 @@ def tropopause_height(T, Z):
         
         #if np.average(Gamma[index:index_2+1], weights = (Z[index+2:index_2+3] - Z[index:index_2+1])/2) <= 2:
         # this doesn't work with nans
-        if np.nanmean(Gamma[index:index_2+1]) <= 2:
+        weights = (Z[index+2:index_2+3] - Z[index:index_2+1])/2
+        weights = weights/sum(weights)
+        if np.nanmean(Gamma[index:index_2+1]*weights) <= 2:
             # if the average lapse rate between these layers is also less than 2 K/km
-            # this assumes that all values are equally weighted - i.e. that height is uniform in vertical
-            return Z2[index], Gamma
+            return Z2[index], flag, Gamma
             
-    return np.nan, Gamma
+    flag = 2       
+    return np.nan, flag, Gamma
     # if there are no layers which satisfy the condition in the profile, return nan
     

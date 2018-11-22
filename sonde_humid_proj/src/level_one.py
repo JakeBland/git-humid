@@ -1,3 +1,6 @@
+"""
+This file is now old and redundant, but will be kept for reference for the time being
+"""
 
 import iris
 import numpy as np
@@ -33,11 +36,12 @@ def temperature_cube(cubelist):
     return temperature
 
 
-def trop_height(cubelist, filter_dic, kind = 'linear'):
+def trop_height(cubelist, filter_dic, flag, kind = 'linear'):
     """
     Function to calculate tropopause height from re-gridded & smoothed temperature
     :param cubelist: list of cubes containing temperature and altitude
     :param filter_dic: dictionary specifying filter name and necessary parameters
+    :param flag:
     :param kind: integer specifying the order of the spline interpolator to use, default is linear
     :return: cube of tropopause height in metres
     """
@@ -50,20 +54,21 @@ def trop_height(cubelist, filter_dic, kind = 'linear'):
     # [0] required as it returns a cube list
     filtered_temp = my_filter(uniform_height_temp.data, filter_dic)
     # filter to smooth out noise
-    trop_alt = calculate.tropopause_height(filtered_temp, np.array(range(0, 20001, 10)))[0]
+    trop_alt, flag = calculate.tropopause_height(filtered_temp, np.array(range(0, 20001, 10)), flag)[:-1]
     print trop_alt
     # calculate tropopause altitude, only taking the first returned valie
     return iris.cube.Cube(trop_alt, standard_name = 'tropopause_altitude', units = 'm',
-            aux_coords_and_dims = [(altitude.coord('latitude'), None), (altitude.coord('longitude'), None), (altitude.coord('time'), None)])
+            aux_coords_and_dims = [(altitude.coord('latitude'), None), (altitude.coord('longitude'), None), (altitude.coord('time'), None)]), flag
 
 
-def process_single_ascent(source, station_number, time, dtype, filter_dic, lead_time = 0, kind = 'linear'):
+def process_single_ascent(source, station_number, time, dtype, filter_dic, flag, lead_time = 0, kind = 'linear'):
     """
     File to do the stuff
     :param source: Code representing origin of data, options for which are: 'EMN', 'CAN', 'DLR', 'IMO', 'NCAS'
     :param station_number: string, 4-6 digit identifier of particular station from which sonde was released
     :param time: datetime object of the time of the release of the sonde
     :param type: string, origin of data: 'sonde', 'UKMO', 'ECAN'
+    :param flag:
     :param filter_dic: dictionary specifying filter name and necessary parameters
     :param lead_time: time in days before the verification time that the forecast was started
     :param kind: integer specifying the order of the spline interpolator to use, default is linear
@@ -78,7 +83,8 @@ def process_single_ascent(source, station_number, time, dtype, filter_dic, lead_
         # files do not have a temperature field, so we must calculate one
         cubelist.append(temperature_cube(cubelist))
 
-    cubelist.append(trop_height(cubelist, filter_dic, kind))
+    trop_alt, flag = trop_height(cubelist, filter_dic, flag, kind)
+    cubelist.append(trop_alt)
     # re-grid temperature to 10m in vertical up to 20km
     # filter the temperature
     # calculate the tropopause height

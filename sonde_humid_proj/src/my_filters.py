@@ -12,10 +12,11 @@ import matplotlib.pyplot as plt
 #import Sophie_code.write_all_regions as swar
 
 
-def filter_cubelist(cubelist_original, filter_dic):
+def filter_cubelist(cubelist_original, altitude, filter_dic):
     """
     Apply chosen filter to data in all cubes in CubeList
     :param cubelist_original: list of cubes whose data are to be filtered
+    :param altitude:
     :param filter_dic: dictionary specifying filter name and necessary parameters
     :return: CubeList of cubes with smoothed data fields
     """
@@ -29,14 +30,15 @@ def filter_cubelist(cubelist_original, filter_dic):
             # these cubes do not have dimension
             pass
         else:            
-            cube.data = my_filter(cube.data, filter_dic)
+            cube.data = my_filter(cube.data, altitude.data, filter_dic)
 
     return cubelist
 
-def my_filter(array, filter_dic):
+def my_filter(array, altitude, filter_dic):
     """
     Filters data to smooth out noise
     :param array: data array to be smoothed
+    :param altitude:
     :param filter_dic: dictionary specifying filter name and necessary parameters
     :return: smoothed array
     """
@@ -47,7 +49,8 @@ def my_filter(array, filter_dic):
 
     elif filter_dic['name'] == 'kernel':
 
-        return kernel_filter(array, filter_dic['gaussian_half_width'])
+        return kernel_filter(array, altitude,
+                             filter_dic['gaussian_half_width'], filter_dic['window_half_width'])
 
     else:
 
@@ -55,14 +58,50 @@ def my_filter(array, filter_dic):
         return array
 
 
-def kernel_filter(array, d):
+def kernel_filter(array, Z, d, whw):
     """
-    Calls filter taken from Sophie code and modified
+    Calls gaussian kernel smoothing filter
     :param array: data array to be smoothed
-    :param d: gaussian half width == 1/4 window size
+    :param Z: array of same size as 'array' correspoinding to length in the direction of smoothing
+    :param d: gaussian half width in metres
+    :param whw: window half width in points
     :return: smoothed array
     """
-    return smooth_equal_intervals(array, d)
+    #return smooth_equal_intervals(array, d)
+    return gaussian_kernel_smooth(array, Z, d, whw)
+    
+
+def gaussian_kernel_smooth(T, Z, d, whw):
+    """
+    Calls gaussian kernel smoothing filter
+    :param array: data array to be smoothed
+    :param Z: array of same size as 'array' correspoinding to length in the direction of smoothing
+    :param d: gaussian half width in metres
+    :param whw: window half width in points
+    :return: smoothed array
+    """  
+    lent = len(T)
+    
+    T_smooth = np.zeros_like(T)
+    
+    for j in xrange(lent):
+        
+        n = min(whw, j, lent-j-1)
+        # maximum of whw points either side of point, window half width
+        
+        top = 0
+        bottom = 0
+        
+        for i in xrange(j-n, j+n+1):
+            
+            weight = np.exp((-(Z[j]-Z[i])**2)/(2*d**2))
+            
+            bottom += weight
+            top += weight*T[i]
+            
+        T_smooth[j] = top/bottom
+        
+    return T_smooth
 
 
 def tenm_weights(d):
@@ -136,12 +175,12 @@ def smooth_equal_intervals(array, d):
 
 def test_filter():
     # tests filters using sinusoid with added noise
+
+    x = np.array(range(100)) # equivalent of 1km in 10m intervals
     
-    kernel_dic = {'name' : 'kernel', 'gaussian_half_width' : 50} 
+    kernel_dic = {'name' : 'kernel', 'altitude_profile' : x, 'gaussian_half_width' : 50, 'window_half_width' : 200} 
     
     savgol_dic = {'name' : 'savgol', 'window' : 21, 'order' : 3}
-    
-    x = np.array(range(100)) # equivalent of 1km in 10m intervals
     
     ys = 10*np.sin(x/5)
     
