@@ -53,37 +53,65 @@ def UKMO_pressure_double_fix(cubelist):
     return cubelist.extract(iris.Constraint(cube_func=lambda cube: cube.coord('altitude').shape == (51,)))
 
 
-def ECAN_pressure_units_fix(cubelist):
+#def ECAN_pressure_units_fix(cubelist):
+#    """
+#    Changes the units of cube of pressure within cubelist if it is there
+#    :param cubelist: list of cubes
+#    """
+#    cubeset = cubelist.extract(iris.Constraint(name = 'P'))
+#    if cubeset:
+#        for cube in cubeset:
+#            cube.convert_units('Pa')
+#    
+#   
+#def ECAN_humidity_units_fix(cubelist):
+#    """
+#    Changes the units of cube of hunidity within cubelist if it is there
+#    :param cubelist: list of cubes
+#    """
+#    cubeset = cubelist.extract(iris.Constraint(name = 'Q'))
+#    if cubeset:
+#        for cube in cubeset:
+#            cube.convert_units('kg kg-1')
+#            
+#
+#def sonde_height_units_fix(cubelist):
+#    """
+#    Changes the units of cube of height within cubelist if it is there
+#    :param cubelist: list of cubes
+#    """
+#    cubeset = cubelist.extract(iris.Constraint(name = 'nonCoordinateGeopotentialHeight'))
+#    if cubeset:
+#        for cube in cubeset:
+#            cube.convert_units('m')
+
+def make_units_uniform(cubelist):
     """
-    Changes the units of cube of pressure within cubelist if it is there
+    Changes the units of cubes within cubelist to standard convention
     :param cubelist: list of cubes
     """
-    cubeset = cubelist.extract(iris.Constraint(name = 'P'))
+    cubeset = cubelist.extract(iris.Constraint(name='air_pressure'))
     if cubeset:
         for cube in cubeset:
             cube.convert_units('Pa')
-    
-   
-def ECAN_humidity_units_fix(cubelist):
-    """
-    Changes the units of cube of hunidity within cubelist if it is there
-    :param cubelist: list of cubes
-    """
-    cubeset = cubelist.extract(iris.Constraint(name = 'Q'))
+
+    cubeset = cubelist.extract([iris.Constraint(name='specific_humidity'),
+                                iris.Constraint(name = 'mass_fraction_of_cloud_ice_in_air'),
+                                iris.Constraint(name='mass_fraction_of_cloud_liquid_water_in_air')])
     if cubeset:
         for cube in cubeset:
             cube.convert_units('kg kg-1')
-            
 
-def sonde_height_units_fix(cubelist):
-    """
-    Changes the units of cube of height within cubelist if it is there
-    :param cubelist: list of cubes
-    """
-    cubeset = cubelist.extract(iris.Constraint(name = 'nonCoordinateGeopotentialHeight'))
+    cubeset = cubelist.extract(iris.Constraint(name='altitude'))
     if cubeset:
         for cube in cubeset:
             cube.convert_units('m')
+            
+    cubeset = cubelist.extract([iris.Constraint(name='air_temperature'),
+                                iris.Constraint(name='dew_point_temperature')])
+    if cubeset:
+        for cube in cubeset:
+            cube.convert_units('K')
 
 
 def select_lead_time(cubelist, time, lead_time):
@@ -254,21 +282,17 @@ def read_data(source, station_number, time, cf_variables = None, model = None, l
             # make cube of altitude & add to list, bacause for UKMO altitude is a coordinate
         
     elif model == 'ECAN':
-        
-        ECAN_pressure_units_fix(cubelist)
-        ECAN_humidity_units_fix(cubelist)
-        # ensure that the units are uniform from all three data sources
-        # pressure in Pa and humidity in kg kg-1
             
         cubelist = add_ECAN_metadata(filepath, filename, cubelist)
         
     else: #else it's sonde
-    
-        sonde_height_units_fix(cubelist)
         
         cubelist = add_sonde_metadata(cubelist)
 
     cubelist = re_name_to_CF(cubelist, model)
     # then re-name all the cubes according to CF conventions for uniformity
-
+    
+    make_units_uniform(cubelist)
+    # ensure that the units are uniform from all three data sources
+    
     return cubelist

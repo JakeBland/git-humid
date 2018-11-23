@@ -26,16 +26,26 @@ def theta_from_temp(temperature, pressure, R = 8.31446, cp = 29.07):
     """
     return temperature*((pressure/1e5)**(-R/cp))
 
-def q_from_vapourpressure(vapour_pres, pressure, repsilon = 0.62198):
+def partial_from_vapour(vapour_pressure, temperature, pressure):
+    """
+    Calculate partial pressure of water vapour from vapour pressure with respect to liquid water using eq. A4.7 in Gill AOD p606
+    :param vapour_pressure: array of vapour pressure with respect to liquid water in Pa
+    :param temperature: array of air temperature in K
+    :param pressure: array of total air pressure in Pa
+    :return: array of partial pressure of water vapour in Pa
+    """
+    return (1 + 1e-8*pressure*(4.5 + 6e-4*(temperature - 273.15)**2))*vapour_pressure
+
+def q_from_partialpressure(partial_pres, pressure, repsilon = 0.62198):
     """
     Calculate specific humidity from vapour pressure using eq. A4.3 in Gill AOD p606, equiv. 3.1.12 p41, equiv. 5.22 in Ambaum TPOA p100
-    :param vapour_pres: array of vapour pressure in Pa
+    :param partial_pres: array of partial pressure of water vapour in Pa
     :param pressure: array of pressure in Pa
     :param repsilon: number, ratio of effective molar masses of water and dry air, approx 0.62198
     :return: array of specific humidity in kg kg-1
     """
-    return repsilon*vapour_pres/(np.amax(pressure, vapour_pres) - (1-repsilon)*vapour_pres)
-    # using the fix of 'amax(pressure, vapour_pres)' means that q is capped at 1kg/kg if for some reason e > p
+    return repsilon*partial_pres/(np.amax([pressure, partial_pres], 0) - (1-repsilon)*partial_pres)
+    # using the fix of 'amax(pressure, partial_pres)' means that q is capped at 1kg/kg if for some reason e > p    
     # FIND ACTUAL SOURCE - I think I found this reading through the code for the UM
 
 def vapour_pressure_from_q(q, pressure, repsilon = 0.62198):
@@ -53,7 +63,7 @@ def RH_from_vapourpressure(vapour_pres, temp, state):
     Calculate relative humidity with respect to specified state
     :param vapour_pres: array of vapour pressure in Pa
     :param temp: array of temperature in K
-    :param state: state to calculate saturation vapour pressure with respect to, either 'liquid water' or 'ice'
+    :param state: state to calculate saturation vapour pressure with respect to, either 'liquid water', 'ice' or 'mixed'
     :return: array of relative humidity in kg kg-1
     """
 
@@ -64,6 +74,10 @@ def RH_from_vapourpressure(vapour_pres, temp, state):
     elif state == 'ice':
 
         svp = svpi_from_temp(temp)
+
+    elif state == 'mixed':
+
+        pass # find and implement mixed phase calculation of relative humidity
 
     return vapour_pres/svp
 
