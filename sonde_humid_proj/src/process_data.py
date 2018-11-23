@@ -29,14 +29,15 @@ def process_single_ascent(source, station_number, time, dtype, filter_dic, flag,
     if dtype == 'UKMO':
         cubelist.append(make_cubes.temperature_cube(cubelist))
     else:
-        #cubelist.append(make_cubes.theta_cube(cubelist))
-        pass
-    if dtype == 'sonde':
-        #cubelist.append(make_cubes.specific_humidity_cube(cubelist))
+        cubelist.append(make_cubes.theta_cube(cubelist))
         pass
 
-    #cubelist.append(make_cubes.relative_humidity_water(cubelist))
-    #cubelist.append(make_cubes.relative_humidity_ice(cubelist))
+    if dtype == 'sonde':
+        cubelist.append(make_cubes.specific_humidity_cube(cubelist))
+        pass
+
+    cubelist.append(make_cubes.relative_humidity_cube(cubelist, 'liquid_water'))
+    cubelist.append(make_cubes.relative_humidity_cube(cubelist, 'ice'))
 
     # filter all variables using kernel smoothing
     altitude = cubelist.extract(iris.Constraint(name='altitude'))[0]

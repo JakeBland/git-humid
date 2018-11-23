@@ -258,6 +258,7 @@ def read_data(source, station_number, time, cf_variables = None, model = None, l
         ECAN_pressure_units_fix(cubelist)
         ECAN_humidity_units_fix(cubelist)
         # ensure that the units are uniform from all three data sources
+        # pressure in Pa and humidity in kg kg-1
             
         cubelist = add_ECAN_metadata(filepath, filename, cubelist)
         

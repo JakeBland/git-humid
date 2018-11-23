@@ -56,7 +56,7 @@ def re_grid_trop_0(source, station_number, time, filter_dic, kind = 'linear'):
     :param source: Code representing origin of data, options for which are: 'EMN', 'CAN', 'DLR', 'IMO', 'NCAS'
     :param station_number: string, 4-6 digit identifier of particular station from which sonde was released
     :param time: datetime object of the time of the release of the sonde
-    :param flag: number, 0 when things are working well, and asigned to a number when somthing goes wrong
+    :param flag: number, 0 when things are working well, and assigned to a number when something goes wrong
     :param filter_dic: dictionary specifying filter name and necessary parameters
     :param kind: integer specifying the order of the spline interpolator to use, default is linear
     :return:
@@ -73,12 +73,18 @@ def re_grid_trop_0(source, station_number, time, filter_dic, kind = 'linear'):
     alt_const = iris.Constraint(name = 'altitude')
 
     trop_alt = sonde.extract(trop_const)[0].data
+    
+    ###
+    sonde_top = sonde.extract(alt_const)[0].data[-1]
+    print('Top of profile : ' + str(sonde_top) + ' m, tropopause found at : ' +
+              str(trop_alt) + ' m.')
+    ###
 
     if flag_sonde:
 
         sonde_top = sonde.extract(alt_const)[0].data[-1]
         print(source + '_' + station_number + '_' + time.strftime('%Y%m%d_%H%M') + ' sonde could not identify tropopause ' +
-              'below 2km below top of profile. \n Top of profile - ' + str(sonde_top) + ' m, tropopause found at - ' +
+              'below 2km below top of profile. \n Top of profile : ' + str(sonde_top) + ' m, tropopause found at : ' +
               str(trop_alt) + ' m. \n Instead trying to find tropopause from UKMO data.')
 
         trop_alt = ukmo.extract(trop_const)[0].data
@@ -87,7 +93,7 @@ def re_grid_trop_0(source, station_number, time, filter_dic, kind = 'linear'):
 
             ukmo_top = ukmo.extract(alt_const)[0].data[-1]
             print(source + '_' + station_number + '_' + time.strftime('%Y%m%d_%H%M') + ' sonde could not identify tropopause ' +
-                  'below 2km below top of profile. \n Top of profile - ' + str(ukmo_top) + ' m, tropopause found at - ' +
+                  'below 2km below top of profile. \n Top of profile : ' + str(ukmo_top) + ' m, tropopause found at : ' +
                   str(trop_alt)+ ' m. \n Instead trying to find tropopause from ECAN data.')
 
             trop_alt = ecan.extract(trop_const)[0].data
@@ -96,20 +102,23 @@ def re_grid_trop_0(source, station_number, time, filter_dic, kind = 'linear'):
 
                 ecan_top = ecan.extract(alt_const)[0].data[-1]
                 print(source + '_' + station_number + '_' + time.strftime('%Y%m%d_%H%M') + ' sonde could not identify tropopause ' +
-                      'below 2km below top of profile. \n Top of profile - ' + str(ukmo_alt.data[-1]) + ' m, tropopause found at - ' +
+                      'below 2km below top of profile. \n Top of profile : ' + str(ecan_top) + ' m, tropopause found at : ' +
                       str(trop_alt) + ' m. \n Due to lack of tropopause found, this profile cannot be used')
 
                 return False
 
-    cubelistlist = [sonde, ukmo, ukmo1, ukmo3, ukmo5, ecan]
+    cubelist_dic = {'sonde':sonde, 'ukmo':ukmo, 'ukmo1':ukmo1, 'ukmo3':ukmo3, 'ukmo5':ukmo5, 'ecan':ecan}
 
-    for cubelist in cubelistlist:
+    for key in cubelist_dic:
+        
+        cubelist = cubelist_dic[key]
 
         altitude = cubelist.extract(alt_const)[0]
 
         altitude.data = altitude.data - trop_alt
 
-        cubelist = re_grid_1d(cubelist, altitude, -10000, 10000, 10, kind)
+        cubelist_dic[key] = re_grid_1d(cubelist, altitude, -10000, 10000, 10, kind)
 
 
-    return cubelistlist
+    return cubelist_dic
+    # it would be nice to produce a plot of superimposed temperature profiles, with dotted tropopauses to compare
