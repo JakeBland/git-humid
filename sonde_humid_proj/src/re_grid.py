@@ -88,6 +88,12 @@ def re_grid_trop_0(source, station_number, time, filter_dic, kind = 'linear'):
               str(trop_alt) + ' m. \n Instead trying to find tropopause from UKMO data.')
 
         trop_alt = ukmo.extract(trop_const)[0].data
+        
+        ###
+        ukmo_top = ukmo.extract(alt_const)[0].data[-1]
+        print('Top of UKMO profile : ' + str(ukmo_top) + ' m, tropopause found at : ' +
+              str(trop_alt) + ' m.')
+        ###
 
         if flag_ukmo:
 
@@ -97,6 +103,12 @@ def re_grid_trop_0(source, station_number, time, filter_dic, kind = 'linear'):
                   str(trop_alt)+ ' m. \n Instead trying to find tropopause from ECAN data.')
 
             trop_alt = ecan.extract(trop_const)[0].data
+            
+            ###
+            ecan_top = ecan.extract(alt_const)[0].data[-1]
+            print('Top of ECAN profile : ' + str(ecan_top) + ' m, tropopause found at : ' +
+                  str(trop_alt) + ' m.')
+            ###
 
             if flag_ecan:
 

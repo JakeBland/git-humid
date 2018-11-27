@@ -10,7 +10,7 @@ def var_name_array():
     :return: array of names of variables from the three sources used plus cf standard
     """
     
-    return [['CF_standard_name', 'UKMO', 'sonde', 'ECAN'],
+    name_list = [['CF_standard_name', 'UKMO', 'sonde', 'ECAN'],
     ['air_pressure', 'air_pressure', 'pressure', 'P'], # ECAN 'P' in hPa where others are in Pa
     ['air_potential_temperature', 'air_potential_temperature', 'empty', 'empty'],
     ['mass_fraction_of_cloud_ice_in_air', 'mass_fraction_of_cloud_ice_in_air', 'empty', 'CIWC'],
@@ -30,6 +30,13 @@ def var_name_array():
     [None, None, None, None]]
     # names of all used variables, 'empty' indicating not used
 
+    for n in range(3):
+
+        name_list[-1][n+1] = [x[n] for x in name_list[1:-1]]
+        # such that if user enters 'None', what is returned are all used variables for given source
+
+    return name_list
+
 def CF_to_source_dict():
     """
     :return: Two dimensional dictionary whose first key is the data source, second key is the name of a variable according
@@ -41,7 +48,8 @@ def CF_to_source_dict():
     # creates a dictionary of dictionaries
     
     for a, source in enumerate(var_names[0][1:]):
-        for b, variable in enumerate(var_names[1:]):
+        for b, variable in enumerate(var_names[1:-1]):
+            # the '-1' is required to ignore the last line for the 'None' eventuality
             names_dict[source][variable[0]] = var_names[b+1][a+1]
             
     return names_dict
@@ -57,7 +65,8 @@ def source_to_CF_dict():
     # creates a dictionary of dictionaries
     
     for a, source in enumerate(var_names[0][1:]):
-        for b, variable in enumerate(var_names[1:]):
+        for b, variable in enumerate(var_names[1:-1]):
+            # the '-1' is required to ignore the last line for the 'None' eventuality
             names_dict[source][var_names[b+1][a+1]] = variable[0]
             
     return names_dict

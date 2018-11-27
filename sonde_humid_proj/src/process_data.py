@@ -54,3 +54,27 @@ def process_single_ascent(source, station_number, time, dtype, filter_dic, flag,
             aux_coords_and_dims = [(altitude.coord('latitude'), None), (altitude.coord('longitude'), None), (altitude.coord('time'), None)]))
 
     return cubelist_smooth, flag
+
+
+def process_regridded_dictionary(source, station_number, time, filter_dic, kind = 'linear'):
+    """
+    Now data has been put onto new vertical coordinate, calculate vertical derivatives & re-grid these onto same new vertical coordinate
+    :param source:
+    :param station_number:
+    :param time:
+    :param filter_dic:
+    :param kind:
+    :return:
+    """
+    pass
+    # read in cubelist dictionary
+
+    # calculate dtheta/dz
+
+    # calculate N**2 = g/theta dtheta/dz
+
+    # calculate dq/dz and 1/q dq/dz
+
+    # I'm sure there was another useful derivative, that I forgot to write down
+
+    # return a cubelist_dic with the new variables
