@@ -6,6 +6,11 @@ import datetime
 import iris
 from re_grid import re_grid_trop_0
 
+#from iris.experimental.equalise_cubes import equalise_attributes
+#from iris.util import unify_time_units
+# these are fixes for merging and concatenation, but should not be needed if
+# cubes are prepared properly from reading in
+
 def create_datetime_list(source, station_number):
     """
     Create lists of datetime objects corresponding to the times of radiosonde launches
@@ -77,11 +82,11 @@ def concatenate_cubelist_dictionary(source, station_number, filter_dic, kind = '
     for key in cubelist_dictionary:
         # will possibly have to do stuff to homogenise cubes, but this should 
         # have been done prior in the re-gridding stage
-
+        
         # concatenate cubelist along time dimension
         twoD_cubelist_dictionary[key] = cubelist_dictionary[key].merge()
         # actually either need to use merge, or add new time dimension coord
-        assert len(twoD_cubelist_dictionary[key]) == len(new_cubelist_dic[key])
+        #assert len(twoD_cubelist_dictionary[key]) == len(new_cubelist_dic[key])
 
         # save_folder = name_of_space/profile_data/source + '_' + station_number'
         # where do I actually have space to save one of these for each site???

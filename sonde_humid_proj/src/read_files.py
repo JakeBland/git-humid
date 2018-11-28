@@ -207,8 +207,8 @@ def add_sonde_metadata(cubelist_original, a = 6371229.0):
     
     t = np.mod(hour, 6)
     # hours after one of the 6-hourly verification times, 00, 06, 12 or 18 UTC
-    time = datetime.datetime(year, month, day, hour) + 
-           datetime.timedelta(hours = (3-np.abs(t-3))*np.sign(t-2.5))
+    time = (datetime.datetime(year, month, day, hour) + 
+           datetime.timedelta(hours = (3-np.abs(t-3))*np.sign(t-2.5)))
     # create datetime object rounded to the nearest verification time
     # subtracts (t<3) or adds (t>=3) hours to nearest 6
     # if this doesn't make sense to you get a pen & paper and work it out 
@@ -228,6 +228,9 @@ def add_sonde_metadata(cubelist_original, a = 6371229.0):
         cube.add_aux_coord(tm)
         cube.add_aux_coord(lat)
         cube.add_aux_coord(lon)
+        # and delete 'launchTime' attribute, now that this is a coordinate
+        del cube.attributes['launchTime']
+        # this will allow cubes to be merged along the time dimension
         
     return cubelist
     
