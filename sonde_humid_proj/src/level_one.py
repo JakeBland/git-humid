@@ -54,18 +54,23 @@ def trop_height(cubelist, filter_dic, flag, kind = 'linear'):
     # [0] required as it returns a cube list
     filtered_temp = my_filter(uniform_height_temp.data, filter_dic)
     # filter to smooth out noise
-    trop_alt, flag = calculate.tropopause_height(filtered_temp, np.array(range(0, 20001, 10)), flag)[:-1]
+    trop_alt, flag = calculate.tropopause_height(filtered_temp, 
+                                                 np.array(range(0, 20001, 10)), flag)[:-1]
     print trop_alt
     # calculate tropopause altitude, only taking the first returned valie
     return iris.cube.Cube(trop_alt, standard_name = 'tropopause_altitude', units = 'm',
-            aux_coords_and_dims = [(altitude.coord('latitude'), None), (altitude.coord('longitude'), None), (altitude.coord('time'), None)]), flag
+                          aux_coords_and_dims = [(altitude.coord('latitude'), None), 
+                                                 (altitude.coord('longitude'), None), 
+                                                 (altitude.coord('time'), None)]), flag
 
 
 def process_single_ascent(source, station_number, time, dtype, filter_dic, flag, lead_time = 0, kind = 'linear'):
     """
     File to do the stuff
-    :param source: Code representing origin of data, options for which are: 'EMN', 'CAN', 'DLR', 'IMO', 'NCAS'
-    :param station_number: string, 4-6 digit identifier of particular station from which sonde was released
+    :param source: Code representing origin of data, options for which are: 
+                   'EMN', 'CAN', 'DLR', 'IMO', 'NCAS'
+    :param station_number: string, 4-6 digit identifier of particular station 
+                           from which sonde was released
     :param time: datetime object of the time of the release of the sonde
     :param type: string, origin of data: 'sonde', 'UKMO', 'ECAN'
     :param flag:

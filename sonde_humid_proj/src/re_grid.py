@@ -21,7 +21,8 @@ def re_grid_1d(variables, dimension, lower, upper, spacing, kind = 'linear'):
     new_dimension = range(lower, upper+1, int(spacing))
     # create evenly spaced array for new dimension
 
-    new_dim = iris.coords.DimCoord(new_dimension, standard_name = dimension.standard_name, units = dimension.units)
+    new_dim = iris.coords.DimCoord(new_dimension, standard_name = dimension.standard_name,
+                                   units = dimension.units)
 
     lat = variables[0].coord('latitude')
     lon = variables[0].coord('longitude')
@@ -42,9 +43,12 @@ def re_grid_1d(variables, dimension, lower, upper, spacing, kind = 'linear'):
             new_data = interp_2_new_dim(new_dimension)
             # interpolate to new dimension array
 
-            new_cubes.append(iris.cube.Cube(new_data, standard_name=cube.standard_name, long_name=cube.long_name,
-                                  var_name=cube.var_name, units=cube.units, attributes=cube.attributes,
-                                  dim_coords_and_dims=[(new_dim, 0)], aux_coords_and_dims=[(lat,None), (lon,None), (time,None)]))
+            new_cubes.append(iris.cube.Cube(new_data, standard_name=cube.standard_name, 
+                                            long_name=cube.long_name, var_name=cube.var_name, 
+                                            units=cube.units, attributes=cube.attributes,
+                                            dim_coords_and_dims=[(new_dim, 0)], 
+                                            aux_coords_and_dims=[(lat,None), (lon,None), 
+                                                                 (time,None)]))
              # create cube of new interpolated variable on new dimcoord and append to list
 
     return new_cubes
@@ -53,13 +57,17 @@ def re_grid_1d(variables, dimension, lower, upper, spacing, kind = 'linear'):
 def re_grid_trop_0(source, station_number, time, filter_dic, kind = 'linear'):
     """
     Take data from all sources
-    :param source: Code representing origin of data, options for which are: 'EMN', 'CAN', 'DLR', 'IMO', 'NCAS'
-    :param station_number: string, 4-6 digit identifier of particular station from which sonde was released
+    :param source: Code representing origin of data, options for which are: 
+                   'EMN', 'CAN', 'DLR', 'IMO', 'NCAS'
+    :param station_number: string, 4-6 digit identifier of particular station 
+                           from which sonde was released
     :param time: datetime object of the time of the release of the sonde
-    :param flag: number, 0 when things are working well, and assigned to a number when something goes wrong
+    :param flag: number, 0 when things are working well, 
+                 and assigned to a number when something goes wrong
     :param filter_dic: dictionary specifying filter name and necessary parameters
     :param kind: integer specifying the order of the spline interpolator to use, default is linear
-    :return:
+    :return: dictionary of cubelists for the sonde, ukmo analysis and 1, 3 and 5 
+             day forecasts, and ECMWF analyses
     """
 
     sonde, flag_sonde = process_single_ascent(source, station_number, time, 'sonde', filter_dic, 0)
@@ -83,8 +91,9 @@ def re_grid_trop_0(source, station_number, time, filter_dic, kind = 'linear'):
     if flag_sonde:
 
         sonde_top = sonde.extract(alt_const)[0].data[-1]
-        print(source + '_' + station_number + '_' + time.strftime('%Y%m%d_%H%M') + ' sonde could not identify tropopause ' +
-              'below 2km below top of profile. \n Top of profile : ' + str(sonde_top) + ' m, tropopause found at : ' +
+        print(source + '_' + station_number + '_' + time.strftime('%Y%m%d_%H%M') + 
+              ' sonde could not identify tropopause ' + 'below 2km below top of profile. ' + 
+              '\n Top of profile : ' + str(sonde_top) + ' m, tropopause found at : ' +
               str(trop_alt) + ' m. \n Instead trying to find tropopause from UKMO data.')
 
         trop_alt = ukmo.extract(trop_const)[0].data
@@ -98,8 +107,9 @@ def re_grid_trop_0(source, station_number, time, filter_dic, kind = 'linear'):
         if flag_ukmo:
 
             ukmo_top = ukmo.extract(alt_const)[0].data[-1]
-            print(source + '_' + station_number + '_' + time.strftime('%Y%m%d_%H%M') + ' sonde could not identify tropopause ' +
-                  'below 2km below top of profile. \n Top of profile : ' + str(ukmo_top) + ' m, tropopause found at : ' +
+            print(source + '_' + station_number + '_' + time.strftime('%Y%m%d_%H%M') + 
+                  ' sonde could not identify tropopause ' + 'below 2km below top of profile. ' + 
+                  '\n Top of profile : ' + str(ukmo_top) + ' m, tropopause found at : ' +
                   str(trop_alt)+ ' m. \n Instead trying to find tropopause from ECAN data.')
 
             trop_alt = ecan.extract(trop_const)[0].data
@@ -113,8 +123,9 @@ def re_grid_trop_0(source, station_number, time, filter_dic, kind = 'linear'):
             if flag_ecan:
 
                 ecan_top = ecan.extract(alt_const)[0].data[-1]
-                print(source + '_' + station_number + '_' + time.strftime('%Y%m%d_%H%M') + ' sonde could not identify tropopause ' +
-                      'below 2km below top of profile. \n Top of profile : ' + str(ecan_top) + ' m, tropopause found at : ' +
+                print(source + '_' + station_number + '_' + time.strftime('%Y%m%d_%H%M') + 
+                      ' sonde could not identify tropopause ' + 'below 2km below top of profile. ' + 
+                      '\n Top of profile : ' + str(ecan_top) + ' m, tropopause found at : ' +
                       str(trop_alt) + ' m. \n Due to lack of tropopause found, this profile cannot be used')
 
                 return False

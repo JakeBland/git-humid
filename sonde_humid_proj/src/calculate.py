@@ -28,7 +28,8 @@ def theta_from_temp(temperature, pressure, R = 8.31446, cp = 29.07):
 
 def partial_from_vapour(vapour_pressure, temperature, pressure):
     """
-    Calculate partial pressure of water vapour from vapour pressure with respect to liquid water using eq. A4.7 in Gill AOD p606
+    Calculate partial pressure of water vapour from vapour pressure 
+    with respect to liquid water using eq. A4.7 in Gill AOD p606
     :param vapour_pressure: array of vapour pressure with respect to liquid water in Pa
     :param temperature: array of air temperature in K
     :param pressure: array of total air pressure in Pa
@@ -38,19 +39,22 @@ def partial_from_vapour(vapour_pressure, temperature, pressure):
 
 def q_from_partialpressure(partial_pres, pressure, repsilon = 0.62198):
     """
-    Calculate specific humidity from vapour pressure using eq. A4.3 in Gill AOD p606, equiv. 3.1.12 p41, equiv. 5.22 in Ambaum TPOA p100
+    Calculate specific humidity from vapour pressure using eq. A4.3 in Gill AOD p606, 
+    equiv. 3.1.12 p41, equiv. 5.22 in Ambaum TPOA p100
     :param partial_pres: array of partial pressure of water vapour in Pa
     :param pressure: array of pressure in Pa
     :param repsilon: number, ratio of effective molar masses of water and dry air, approx 0.62198
     :return: array of specific humidity in kg kg-1
     """
-    return repsilon*partial_pres/(np.amax([pressure, partial_pres], 0) - (1-repsilon)*partial_pres)
+    return repsilon*partial_pres/(np.amax([pressure, partial_pres], 0) - 
+                                                     (1-repsilon)*partial_pres)
     # using the fix of 'amax(pressure, partial_pres)' means that q is capped at 1kg/kg if for some reason e > p    
     # FIND ACTUAL SOURCE - I think I found this reading through the code for the UM
 
 def vapour_pressure_from_q(q, pressure, repsilon = 0.62198):
     """
-    Calculate vapour pressure from specific humidity using eq. A4.3 in Gill AOD p606, equiv. 3.1.12 p41, equiv. 5.22 in Ambaum TPOA p100
+    Calculate vapour pressure from specific humidity using eq. A4.3 in Gill AOD p606, 
+    equiv. 3.1.12 p41, equiv. 5.22 in Ambaum TPOA p100
     :param q: array of specific humidity in Pa
     :param pressure: array of pressure in Pa
     :param repsilon: number, ratio of effective molar masses of water and dry air, approx 0.62198
@@ -63,7 +67,8 @@ def RH_from_vapourpressure(vapour_pres, temp, state):
     Calculate relative humidity with respect to specified state
     :param vapour_pres: array of vapour pressure in Pa
     :param temp: array of temperature in K
-    :param state: state to calculate saturation vapour pressure with respect to, either 'liquid water', 'ice' or 'mixed'
+    :param state: state to calculate saturation vapour pressure with respect to, 
+                  either 'liquid water', 'ice' or 'mixed'
     :return: array of relative humidity in kg kg-1
     """
 
@@ -84,7 +89,8 @@ def RH_from_vapourpressure(vapour_pres, temp, state):
 
 def svpw_from_temp(temp):
     """
-    Calculate saturation vapour pressure with respect to liquid water from temperature using Sonntag numerical approximation
+    Calculate saturation vapour pressure with respect to liquid water from 
+    temperature using Sonntag numerical approximation
     :param temp: array of temperature in K
     :return: array of vapour pressure with respect to water in Pa
     """
@@ -96,7 +102,8 @@ def svpw_from_temp(temp):
 
 def svpi_from_temp(temp):
     """
-    Calculate saturation vapour pressure with respect to ice from temperature using Sonntag numerical approximation
+    Calculate saturation vapour pressure with respect to ice from temperature 
+    using Sonntag numerical approximation
     :param temp: array of temperature in K
     :return: array of vapour pressure with respect to ice in Pa
     """
@@ -110,16 +117,19 @@ def tropopause_height(T, Z, flag):
     """
     Calculate the tropopause height by WMO definition
     :param T: array of temperature (K)
-    :param Z: corresponding array of altitude (m) (assumed to be uniform in vertical for the 2km mean)
-    :param flag: number, 0 when things are working well, and asigned to a number when somthing goes wrong
-    :return: Tropopause height (number, in metres), and optionally also the array of lapse rate (K/km)
+    :param Z: corresponding array of altitude (m)
+    :param flag: number, 0 when things are working well, 
+                 and asigned to a number when somthing goes wrong
+    :return: Tropopause height (number, in metres), 
+             and optionally also the array of lapse rate (K/km)
     """
     Z2 = Z[1:-1]
     
     Gamma = 1e3*(T[:-2] - T[2:])/(Z[2:] - Z[:-2])
     
     for index in np.nonzero((Gamma <= 2) * (Z2 >= 4000) * (Z2 <= 18000))[0]:
-        # for all individual points at which the lapse rate is less than 2 K/km, between 4km & 18km (following Ben Harvey)
+        # for all individual points at which the lapse rate is less than 2 K/km, 
+        # between 4km & 18km (following Ben Harvey)
 
         if Z2[-1] < Z2[index] + 2e3:
             index_2 = -1

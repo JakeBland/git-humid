@@ -104,6 +104,12 @@ def gaussian_kernel_smooth(T, Z, d, whw):
     return T_smooth
 
 
+
+
+
+
+### The below is old and potentially at this point redundant ###
+
 def tenm_weights(d):
     # taken from sophie and modified to use array arithmetic instead of for loops
     # Calculates weights for a truncated gaussian smoothing with half-width d and points every 10m
@@ -178,7 +184,7 @@ def test_filter():
 
     x = np.array(range(100)) # equivalent of 1km in 10m intervals
     
-    kernel_dic = {'name' : 'kernel', 'altitude_profile' : x, 'gaussian_half_width' : 50, 'window_half_width' : 200} 
+    kernel_dic = {'name' : 'kernel', 'gaussian_half_width' : 50, 'window_half_width' : 200}
     
     savgol_dic = {'name' : 'savgol', 'window' : 21, 'order' : 3}
     
@@ -189,9 +195,9 @@ def test_filter():
     for n in x:
         y[n] += random.randint(1, 201)/100 - 1
     
-    yk = my_filter(y, kernel_dic)
+    yk = my_filter(y, x, kernel_dic)
     
-    yg = my_filter(y, savgol_dic)
+    yg = my_filter(y, x, savgol_dic)
     
     plt.figure(figsize = (12, 8))
     plt.plot(ys, label = 'original')
@@ -202,8 +208,8 @@ def test_filter():
     plt.title('Profile smoothing using window of 21 points (for kernel, gaussian half-width = 5 points, 2 half widths either side)')
     plt.show()
     
-    xk = my_filter(x, kernel_dic)
-    xg = my_filter(x, savgol_dic)
+    xk = my_filter(x, x, kernel_dic)
+    xg = my_filter(x, x, savgol_dic)
     
     plt.figure(figsize = (12, 8))
     plt.plot(x, label = 'original')

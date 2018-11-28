@@ -1,5 +1,6 @@
 """
-Collection of functions to take as arguments a cubelist, and return cubes of desired variables, calculated using 'calculate'
+Collection of functions to take as arguments a cubelist, and return cubes of 
+desired variables, calculated using 'calculate'
 """
 import iris
 import calculate
@@ -45,7 +46,8 @@ def theta_cube(cubelist):
 def specific_humidity_cube(cubelist):
     """
     Create cube of specific humidity
-    :param cubelist: list of cubes containing dew point temperature, pressure and tenperature
+    :param cubelist: list of cubes containing dew point temperature,
+                     pressure and temperature
     :return: cube of specific humidity
     """
     dew_point = cubelist.extract(iris.Constraint(name='dew_point_temperature'))[0]
@@ -54,7 +56,8 @@ def specific_humidity_cube(cubelist):
     # [0] required as cubelist.extract returns a cube list
 
     vapour_pressure = calculate.svpw_from_temp(dew_point.data)
-    partial_pressure = calculate.partial_from_vapour(vapour_pressure, temperature.data, pressure.data)
+    partial_pressure = calculate.partial_from_vapour(vapour_pressure, 
+                                                     temperature.data, pressure.data)
     spec_hum = calculate.q_from_partialpressure(partial_pressure, pressure.data)
 
     q = dew_point.copy()
@@ -68,7 +71,8 @@ def relative_humidity_cube(cubelist, state):
     """
     Create cube of relative humidity with respect to specified state
     :param cubelist: list of cubes containing specific humidity, pressure and tenperature
-    :param state: state to calculate saturation vapour pressure with respect to, either 'liquid water', 'ice' or 'mixed'
+    :param state: state to calculate saturation vapour pressure 
+                  with respect to, either 'liquid water', 'ice' or 'mixed'
     :return: cube of relative humidity
     """
     specific_humidity = cubelist.extract(iris.Constraint(name = 'specific_humidity'))[0]

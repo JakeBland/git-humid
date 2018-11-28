@@ -4,6 +4,7 @@ and return cube lists of as near identical format as I can reasonably manage
 
 The actually useful function 'read_data' is right at the end
 """
+from __future__ import division
 
 import iris
 iris.FUTURE.cell_datetime_objects=True
@@ -17,7 +18,8 @@ from re_name_vars import change_names_from_CF, re_name_to_CF
 def sonde_filepath(source):
     """
     Define the path to the radiosonde data in this particular case
-    :param source: Code representing origin of data, options for which are: 'EMN', 'CAN', 'DLR', 'IMO', 'NCAS'
+    :param source: Code representing origin of data, options for which are: 
+                   'EMN', 'CAN', 'DLR', 'IMO', 'NCAS'
     :return: file path
     """
     return '/home/users/pr902839/datasets/nawdex/radiosondes/' + source + '/netcdf/'
@@ -34,9 +36,12 @@ def model_filepath(model):
 
 def def_filename(source, station_number, time):
     """
-    For given time and location of ascent, return name of the file as structured for this particular case
-    :param source: Code representing origin of data, options for which are: 'EMN', 'CAN', 'DLR', 'IMO', 'NCAS'
-    :param station_number: 4-6 digit identifier of particular station from which sonde was released
+    For given time and location of ascent, return name of the file 
+    as structured for this particular case
+    :param source: Code representing origin of data, options for which are: 
+                   'EMN', 'CAN', 'DLR', 'IMO', 'NCAS'
+    :param station_number: 4-6 digit identifier of particular station 
+                           from which sonde was released
     :param time: datetime object of the time of the release of the sonde
     :return: file name
     """
@@ -45,8 +50,10 @@ def def_filename(source, station_number, time):
     
 def UKMO_pressure_double_fix(cubelist):
     """
-    UKMO files contain two pressure variables, one of which is on 51 levels, the same as theta, humidity and cloud water
-    This function extracts only cubes on these levels, meaning there is a unique pressure variable in the cube list
+    UKMO files contain two pressure variables, one of which is on 51 levels, 
+    the same as theta, humidity and cloud water
+    This function extracts only cubes on these levels, meaning there is a 
+    unique pressure variable in the cube list
     :param cubelist: CubeList of UKMO model data
     :return: CubeList of UKMO model data containing only those cubes on 51 vertical levels
     """
@@ -116,7 +123,8 @@ def make_units_uniform(cubelist):
 
 def select_lead_time(cubelist, time, lead_time):
     """
-    Take CubeList containing cubes with several forecast reference times and extract desired lead time
+    Take CubeList containing cubes with several forecast reference times and 
+    extract desired lead time
     :param cubelist: list of cubes with several forecast lead times
     :param time: datetime object of the time of the release of the sonde
     :param lead_time: time in days before the verification time that the forecast was started
@@ -124,7 +132,8 @@ def select_lead_time(cubelist, time, lead_time):
     """
     t = np.mod(time.hour, 6)
     # hours after one of the 6-hourly verification times, 00, 06, 12 or 18 UTC
-    ver_time = time + datetime.timedelta(minutes = ((3-np.abs(t-3))*np.sign(t-2.5)*60-time.minute))
+    ver_time = time + datetime.timedelta(minutes = 
+                                         ((3-np.abs(t-3))*np.sign(t-2.5)*60-time.minute))
     # create second datetime object rounded to the nearest verification time
     # subtracts minutes then subtracts (t<3) or adds (t>=3) hours to nearest 6
     # if this doesn't make sense to you get a pen & paper and work it out          
@@ -158,7 +167,7 @@ def add_ECAN_metadata(filepath, filename, cubelist_original, a = 6371229.0):
     # reads times from string
     
     time = datetime.datetime(year, month, day, hour) - datetime.datetime(1970, 1, 1)
-    t_hours = float(time.days*24)
+    t_hours = float(time.days*24 + time.seconds/(60*60))
     # convert this list of strings into an interpretable object
     
     tm = iris.coords.DimCoord(t_hours, standard_name = 'time', units=Unit('hours since 1970-01-01 00:00:00', calendar='gregorian'))
@@ -171,6 +180,7 @@ def add_ECAN_metadata(filepath, filename, cubelist_original, a = 6371229.0):
         cube.add_aux_coord(tm)
         cube.add_aux_coord(lat)
         cube.add_aux_coord(lon)
+        cube.attributes['source'] = 'ECMWF Analysis Data'
         
     return cubelist
 
@@ -197,14 +207,15 @@ def add_sonde_metadata(cubelist_original, a = 6371229.0):
     
     t = np.mod(hour, 6)
     # hours after one of the 6-hourly verification times, 00, 06, 12 or 18 UTC
-    time = datetime.datetime(year, month, day, hour) + datetime.timedelta(hours = (3-np.abs(t-3))*np.sign(t-2.5))
+    time = datetime.datetime(year, month, day, hour) + 
+           datetime.timedelta(hours = (3-np.abs(t-3))*np.sign(t-2.5))
     # create datetime object rounded to the nearest verification time
     # subtracts (t<3) or adds (t>=3) hours to nearest 6
     # if this doesn't make sense to you get a pen & paper and work it out 
     
     time_elapsed = time - datetime.datetime(1970, 1, 1)
     # convert to appropriate units
-    t_hours = float(time_elapsed.days*24)
+    t_hours = float(time_elapsed.days*24 + time_elapsed.seconds/(60*60))
     # convert this list of strings into an interpretable object
     
     tm = iris.coords.DimCoord(t_hours, standard_name = 'time', units=Unit('hours since 1970-01-01 00:00:00', calendar='gregorian'))
@@ -243,7 +254,8 @@ def make_alt_cube(test_cube):
 def read_data(source, station_number, time, cf_variables = None, model = None, lead_time = 0):
     """
     Load the data for a single radiosonde ascent
-    :param source: Code representing origin of data, options for which are: 'EMN', 'CAN', 'DLR', 'IMO', 'NCAS'
+    :param source: Code representing origin of data, options for which are: 
+                   'EMN', 'CAN', 'DLR', 'IMO', 'NCAS'
     :param station_number: 4-6 digit identifier of particular station from which sonde was released
     :param time: datetime object of the time of the release of the sonde
     :param cf_variables: an array containing the CF standard names of variables one wishes to extract from the file
@@ -294,5 +306,12 @@ def read_data(source, station_number, time, cf_variables = None, model = None, l
     
     make_units_uniform(cubelist)
     # ensure that the units are uniform from all three data sources
+    
+    for cube in cubelist:
+        
+        cube.attributes['origin'] = source
+        cube.attributes['station_number'] = station_number
+        # as files are identified by these strings, it is useful to identify
+        # the cubes with them also
     
     return cubelist
