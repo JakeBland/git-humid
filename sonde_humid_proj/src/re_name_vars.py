@@ -39,8 +39,9 @@ def var_name_array():
 
 def CF_to_source_dict():
     """
-    :return: Two dimensional dictionary whose first key is the data source, second key is the name of a variable according
-    to the CF standard naming conventions, and which gives the name of a variable according to that data source
+    :return: Two dimensional dictionary whose first key is the data source, 
+    second key is the name of a variable according to the CF standard naming 
+    conventions, and which gives the name of a variable according to that data source
     """
     var_names = var_name_array()
     
@@ -56,8 +57,9 @@ def CF_to_source_dict():
     
 def source_to_CF_dict():
     """
-    :return: Two dimensional dictionary whose first key is the data source, second key is the name of a variable according
-    to that data source, and which gives the name of a variable according to the CF standard naming conventions
+    :return: Two dimensional dictionary whose first key is the data source, 
+    second key is the name of a variable according to that data source, 
+    and which gives the name of a variable according to the CF standard naming conventions
     """
     var_names = var_name_array()
     

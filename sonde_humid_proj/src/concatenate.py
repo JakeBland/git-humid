@@ -88,10 +88,10 @@ def concatenate_cubelist_dictionary(source, station_number, filter_dic, kind = '
         # actually either need to use merge, or add new time dimension coord
         #assert len(twoD_cubelist_dictionary[key]) == len(new_cubelist_dic[key])
 
-        # save_folder = name_of_space/profile_data/source + '_' + station_number'
+        save_folder = '/home/users/bn826011/PhD/radiosonde/NAWDEX_timeseries/' + source + '_' + station_number
         # where do I actually have space to save one of these for each site???
 
-        #iris.save(twoD_cubelist_dictionary[key], save_folder + '/' + key + '_2D_trop_relative.nc')
+        iris.save(twoD_cubelist_dictionary[key], save_folder + '/' + key + '_2D_trop_relative.nc')
 
-    return twoD_cubelist_dictionary
+    #return twoD_cubelist_dictionary
     # but don't actually return if it has actually saved

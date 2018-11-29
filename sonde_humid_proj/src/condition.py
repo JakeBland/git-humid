@@ -4,9 +4,12 @@ These masks can then be applied to data for subsetting
 """
 from __future__ import division
 import iris
+# need to work out how I want to deal with time objects
+iris.FUTURE.cell_datetime_objects=True
 import numpy as np
 
 import pickle
+import datetime
 
 
 def low_static_stability_dictionary():
@@ -33,15 +36,18 @@ def LSL_condition(LSL_dictionary, cubelist, SS_Lim = 2):
     source = altitude.attributes['origin']
     station_number = altitude.attributes['station_number']
     # extract an array of the vertical altitude coordinate
-    alt = altitude.coords('altitude').points
+    alt = altitude.coord('altitude').points
     # create copy cube to put this new array into
     is_LSL = altitude.copy()
 
-    for time in altitude.coords('time'):
+    for time in altitude.coord('time'):
         # need to make sure this actually loops over time and not altitude itself
-
+        # convert 'time' to a datetime object
+        time_dto = datetime.datetime(1970, 1, 1) + datetime.timedelta(hours = time.points[0])
         # define keys for dictionary
-        filename = source + '_' + station_number + '_' + time.strftime('%Y%m%d_%H%M') + '.nc'
+        filename = source + '_' + station_number + '_' + time_dto.strftime('%Y%m%d_%H%M') + '.nc'
+        ### TIME IDENTIFICATION PROBLEM: STORED TIME COORDINATE IS ROUNDED ANALYSIS TIME ###
+        ### FOR FILE IDENTIFICATION NEED RELEASE TIME TO BE STORED AS SCALAR CUBE ###
         levels = 'LSLs_' + str(SS_Lim) + 'p0K'
 
         # extract list of dictionaries of low static stability layers for this location and time

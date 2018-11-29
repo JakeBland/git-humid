@@ -82,11 +82,11 @@ def re_grid_trop_0(source, station_number, time, filter_dic, kind = 'linear'):
 
     trop_alt = sonde.extract(trop_const)[0].data
     
-    ###
-    sonde_top = sonde.extract(alt_const)[0].data[-1]
-    print('Top of profile : ' + str(sonde_top) + ' m, tropopause found at : ' +
-              str(trop_alt) + ' m.')
-    ###
+#    ###
+#    sonde_top = sonde.extract(alt_const)[0].data[-1]
+#    print('Top of profile : ' + str(sonde_top) + ' m, tropopause found at : ' +
+#              str(trop_alt) + ' m.')
+#    ###
 
     if flag_sonde:
 

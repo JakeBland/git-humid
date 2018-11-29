@@ -37,7 +37,7 @@ def partial_from_vapour(vapour_pressure, temperature, pressure):
     """
     return (1 + 1e-8*pressure*(4.5 + 6e-4*(temperature - 273.15)**2))*vapour_pressure
 
-def q_from_partialpressure(partial_pres, pressure, repsilon = 0.62198):
+def q_from_partialpressure(partial_pres, pressure, repsilon = 0.621981):
     """
     Calculate specific humidity from vapour pressure using eq. A4.3 in Gill AOD p606, 
     equiv. 3.1.12 p41, equiv. 5.22 in Ambaum TPOA p100
@@ -51,7 +51,7 @@ def q_from_partialpressure(partial_pres, pressure, repsilon = 0.62198):
     # using the fix of 'amax(pressure, partial_pres)' means that q is capped at 1kg/kg if for some reason e > p    
     # FIND ACTUAL SOURCE - I think I found this reading through the code for the UM
 
-def vapour_pressure_from_q(q, pressure, repsilon = 0.62198):
+def vapour_pressure_from_q(q, pressure, repsilon = 0.621981):
     """
     Calculate vapour pressure from specific humidity using eq. A4.3 in Gill AOD p606, 
     equiv. 3.1.12 p41, equiv. 5.22 in Ambaum TPOA p100
@@ -151,4 +151,3 @@ def tropopause_height(T, Z, flag):
     flag = 2
     return np.nan, flag, Gamma
     # if there are no layers which satisfy the condition in the profile, return nan and raise flag
-    
