@@ -45,7 +45,8 @@ def create_datetime_list(source, station_number):
     return datetime_list
 
 
-def concatenate_cubelist_dictionary(source, station_number, filter_dic, kind = 'linear'):
+def concatenate_cubelist_dictionary(source, station_number, filter_dic = {'name' : 'kernel', 
+                   'gaussian_half_width' : 50, 'window_half_width' : 200}, kind = 'linear'):
     """
     Concatenate sondes from same location at different times into single object
     :param source: Code representing origin of data, options for which are: 
@@ -60,6 +61,9 @@ def concatenate_cubelist_dictionary(source, station_number, filter_dic, kind = '
     """
     # output dictionary of 2D cubelists in time & alt
     datetime_list = create_datetime_list(source, station_number)
+    
+    if not datetime_list:
+        return source + '_' + station_number + ' ascents not found'
 
     # for the first time, create first cubelist_dic
     cubelist_dictionary = re_grid_trop_0(source, station_number, datetime_list[0], 
@@ -71,10 +75,14 @@ def concatenate_cubelist_dictionary(source, station_number, filter_dic, kind = '
 
         # create new cubelist_dic
         new_cubelist_dic = re_grid_trop_0(source, station_number, time, filter_dic, kind)
-        # for each key in dictionary:
-        for key in cubelist_dictionary:
-            # extend each cubelist in first dictionary by new one
-            cubelist_dictionary[key].extend(new_cubelist_dic[key])
+        
+        if new_cubelist_dic:
+            # it will return False if there is no found tropopause
+        
+            # for each key in dictionary:
+            for key in cubelist_dictionary:
+                # extend each cubelist in first dictionary by new one
+                cubelist_dictionary[key].extend(new_cubelist_dic[key])
 
     twoD_cubelist_dictionary = {}
 

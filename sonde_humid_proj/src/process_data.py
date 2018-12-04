@@ -46,12 +46,15 @@ def process_single_ascent(source, station_number, time, dtype, filter_dic,
     cubelist.append(make_cubes.relative_humidity_cube(cubelist, 'liquid_water'))
     cubelist.append(make_cubes.relative_humidity_cube(cubelist, 'ice'))
 
-    # filter all variables using kernel smoothing
-    altitude = cubelist.extract(iris.Constraint(name='altitude'))[0]
-    cubelist.remove(altitude)
-    # as the vertical coordinate I don't think we want this smoothed (?) (can always remove this line)
-    cubelist_smooth = filter_cubelist(cubelist, altitude, filter_dic)
-    cubelist_smooth.append(altitude)
+    # filter all variables using kernel smoothing [only sonde]
+    if dtype == 'sonde':
+        altitude = cubelist.extract(iris.Constraint(name='altitude'))[0]
+        cubelist.remove(altitude)
+        # as the vertical coordinate I don't think we want this smoothed (?) (can always remove this line)
+        cubelist_smooth = filter_cubelist(cubelist, altitude, filter_dic)
+        cubelist_smooth.append(altitude)
+    else:
+        cubelist_smooth = cubelist
 
     # calculate the tropopause height
     # add trop_height_m as cube to list
