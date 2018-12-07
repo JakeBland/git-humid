@@ -14,6 +14,7 @@ from iris.unit import Unit
 from iris.coord_systems import GeogCS
 
 from re_name_vars import change_names_from_CF, re_name_to_CF
+import calculate
 
 def sonde_filepath(source):
     """
@@ -254,7 +255,7 @@ def make_alt_cube(test_cube):
     return alt
 
 
-def read_data(source, station_number, time, cf_variables = None, model = None, lead_time = 0):
+def read_data(source, station_number, time, cf_variables = None, model = None, lead_time = 0, a = 6371229.0):
     """
     Load the data for a single radiosonde ascent
     :param source: Code representing origin of data, options for which are: 
@@ -284,6 +285,7 @@ def read_data(source, station_number, time, cf_variables = None, model = None, l
 
     cubelist = iris.load(filepath + filename, variables)
 
+    # extract appropriate data & metatata
     if model == 'UKMO':
 
         cubelist = UKMO_pressure_double_fix(cubelist)
@@ -291,18 +293,28 @@ def read_data(source, station_number, time, cf_variables = None, model = None, l
         # we desire the one on the same number of levels as theta and humidity
         cubelist = select_lead_time(cubelist, time, lead_time)
         
-        if 'altitude' in variables:
-            
-            cubelist.append(make_alt_cube(cubelist[0]))
-            # make cube of altitude & add to list, bacause for UKMO altitude is a coordinate
-        
     elif model == 'ECAN':
             
-        cubelist = add_ECAN_metadata(filepath, filename, cubelist)
+        cubelist = add_ECAN_metadata(filepath, filename, cubelist, a)
         
     else: #else it's sonde
         
-        cubelist = add_sonde_metadata(cubelist)
+        cubelist = add_sonde_metadata(cubelist, a)
+
+    if 'altitude' in variables:
+
+        if model == 'UKMO':
+
+            cubelist.append(make_alt_cube(cubelist[0]))
+            # make cube of altitude & add to list, bacause for UKMO altitude is a coordinate
+
+        else:
+
+            altitude = cubelist.extract(iris.Constraint(name = 'altitude'))
+
+            altitude.data = calculate.altitude_from_GPH(altitude.data, a)
+            # sonde & ECAN "altitude" data is actually geopotential height
+            # so this needs converting to altitude
 
     cubelist = re_name_to_CF(cubelist, model)
     # then re-name all the cubes according to CF conventions for uniformity

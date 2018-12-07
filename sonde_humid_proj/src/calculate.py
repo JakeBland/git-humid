@@ -4,6 +4,15 @@ Collection of functions to carry out necessary calculations of meteorological qu
 
 import numpy as np
 
+def altitude_from_GPH(geopotential, a = 6371229.0):
+    """
+    Calculate geometric altitude from geopotential height
+    :param geopotential: array of geopotential height in m
+    :param a: radius of the earth
+    :return: array of altitude
+    """
+    return a*geopotential/(a-geopotential)
+
 def temp_from_theta(theta, pressure, R = 8.31446, cp = 29.07):
     """
     Calculate air_temperature from potential temperature and pressure

@@ -54,7 +54,7 @@ def re_grid_1d(variables, dimension, lower, upper, spacing, kind = 'linear'):
     return new_cubes
 
 
-def re_grid_trop_0(source, station_number, time, filter_dic, kind = 'linear'):
+def re_grid_trop_0(source, station_number, time, filter_dic, kind = 'linear', throw_flag = True):
     """
     Take data from all sources
     :param source: Code representing origin of data, options for which are: 
@@ -66,11 +66,18 @@ def re_grid_trop_0(source, station_number, time, filter_dic, kind = 'linear'):
                  and assigned to a number when something goes wrong
     :param filter_dic: dictionary specifying filter name and necessary parameters
     :param kind: integer specifying the order of the spline interpolator to use, default is linear
+    :param throw_flag: if True, return False if flag is raised by sonde ascent.
     :return: dictionary of cubelists for the sonde, ukmo analysis and 1, 3 and 5 
              day forecasts, and ECMWF analyses
     """
 
     sonde, flag_sonde = process_single_ascent(source, station_number, time, 'sonde', filter_dic, 0)
+
+    if throw_flag:
+        if flag_sonde:
+            return False
+    # if throw_flag, disregard the ascent if any error occurred in the processing of sonde data
+
     ukmo, flag_ukmo = process_single_ascent(source, station_number, time, 'UKMO', filter_dic, 0)
     ukmo1 = process_single_ascent(source, station_number, time, 'UKMO', filter_dic, 0, lead_time = 1)[0]
     ukmo3 = process_single_ascent(source, station_number, time, 'UKMO', filter_dic, 0, lead_time=3)[0]
