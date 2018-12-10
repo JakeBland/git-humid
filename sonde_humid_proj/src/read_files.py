@@ -208,13 +208,14 @@ def add_sonde_metadata(cubelist_original, a = 6371229.0):
     
     t = np.mod(hour, 6)
     # hours after one of the 6-hourly verification times, 00, 06, 12 or 18 UTC
-    time = (datetime.datetime(year, month, day, hour) + 
-           datetime.timedelta(hours = (3-np.abs(t-3))*np.sign(t-2.5)))
+    time_release = datetime.datetime(year, month, day, hour)
+    # sonde relese time
+    time_mod = time_release + datetime.timedelta(hours = (3-np.abs(t-3))*np.sign(t-2.5))
     # create datetime object rounded to the nearest verification time
     # subtracts (t<3) or adds (t>=3) hours to nearest 6
     # if this doesn't make sense to you get a pen & paper and work it out 
     
-    time_elapsed = time - datetime.datetime(1970, 1, 1)
+    time_elapsed = time_mod - datetime.datetime(1970, 1, 1)
     # convert to appropriate units
     t_hours = float(time_elapsed.days*24 + time_elapsed.seconds/(60*60))
     # convert this list of strings into an interpretable object
@@ -223,6 +224,9 @@ def add_sonde_metadata(cubelist_original, a = 6371229.0):
     lat = iris.coords.DimCoord(cube.attributes['stationLatitude'], standard_name = 'latitude', units = 'degrees', coord_system=GeogCS(a))
     lon = iris.coords.DimCoord(cube.attributes['stationLongitude'], standard_name = 'longitude', units = 'degrees', coord_system=GeogCS(a))
     # create coordinates
+
+    # make scalar cube of time_release, and add this to cubelist
+    cubelist.append(make_time_cube(time_elapsed))
     
     for cube in cubelist:
         
@@ -234,7 +238,22 @@ def add_sonde_metadata(cubelist_original, a = 6371229.0):
         # this will allow cubes to be merged along the time dimension
         
     return cubelist
-    
+
+
+def make_time_cube(time):
+    """
+    Make scalar cube of datetime object
+    :param time: datetime object
+    :return: scalar cube
+    """
+    time_elapsed = time - datetime.datetime(1970, 1, 1)
+    # convert to appropriate units
+    t_hours = float(time_elapsed.days * 24 + time_elapsed.seconds / (60 * 60))
+    # convert this list of strings into an interpretable object
+
+    # return scalar cube of time
+    return iris.cube.Cube(t_hours, standard_name = 'time',
+                          units = Unit('hours since 1970-01-01 00:00:00', calendar='gregorian'))
     
 def make_alt_cube(test_cube):
     """
