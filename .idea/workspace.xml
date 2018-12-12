@@ -2,16 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="64364f84-acb7-46bb-981f-a4712396da81" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/sonde_humid_proj/plot/compilation_plots.py" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/sonde_humid_proj/plot/station_map.py" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/sonde_humid_proj/plot/tropopause_heights.py" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/sonde_humid_proj/src/ERA_climatology.py" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/sonde_humid_proj/figures/temperature_profile_comparison_03882_0907_00_sonde.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/sonde_humid_proj/figures/temperature_profile_comparison_03882_1002_00_ECAN.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/sonde_humid_proj/figures/temperature_profile_comparison_03882_1002_00_UKMO.png" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/sonde_humid_proj/figures/temperature_profile_comparison_03882_1002_00_sonde.png" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sonde_humid_proj/src/read_files.py" afterPath="$PROJECT_DIR$/sonde_humid_proj/src/read_files.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sonde_humid_proj/src/ERA_climatology.py" afterPath="$PROJECT_DIR$/sonde_humid_proj/src/ERA_climatology.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sonde_humid_proj/src/calculate.py" afterPath="$PROJECT_DIR$/sonde_humid_proj/src/calculate.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sonde_humid_proj/src/make_cubes.py" afterPath="$PROJECT_DIR$/sonde_humid_proj/src/make_cubes.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/sonde_humid_proj/src/process_data.py" afterPath="$PROJECT_DIR$/sonde_humid_proj/src/process_data.py" />
     </list>
     <ignored path="git_humid.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -34,8 +28,8 @@
       <file leaf-file-name="read_files.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/sonde_humid_proj/src/read_files.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="135">
-              <caret line="9" column="0" selection-start-line="9" selection-start-column="0" selection-end-line="9" selection-end-column="38" />
+            <state relative-caret-position="-972">
+              <caret line="239" column="19" selection-start-line="239" selection-start-column="19" selection-end-line="239" selection-end-column="19" />
               <folding>
                 <element signature="e#226#257#0" expanded="true" />
               </folding>
@@ -43,21 +37,21 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="re_name_vars.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/sonde_humid_proj/src/re_name_vars.py">
+      <file leaf-file-name="my_filters.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/sonde_humid_proj/src/my_filters.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1050">
-              <caret line="70" column="85" selection-start-line="70" selection-start-column="85" selection-end-line="70" selection-end-column="85" />
+            <state relative-caret-position="1560">
+              <caret line="110" column="64" selection-start-line="110" selection-start-column="64" selection-end-line="110" selection-end-column="64" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="compilation_plots.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="compilation_plots.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/sonde_humid_proj/plot/compilation_plots.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="708">
-              <caret line="78" column="4" selection-start-line="78" selection-start-column="4" selection-end-line="78" selection-end-column="4" />
+            <state relative-caret-position="1878">
+              <caret line="135" column="0" selection-start-line="135" selection-start-column="0" selection-end-line="135" selection-end-column="0" />
               <folding>
                 <element signature="e#0#11#0" expanded="true" />
               </folding>
@@ -65,12 +59,26 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="calculate.py" pinned="false" current-in-tab="false">
+      <file leaf-file-name="calculate.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/sonde_humid_proj/src/calculate.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="150">
-              <caret line="10" column="33" selection-start-line="10" selection-start-column="33" selection-end-line="10" selection-end-column="33" />
-              <folding />
+            <state relative-caret-position="618">
+              <caret line="239" column="13" selection-start-line="239" selection-start-column="13" selection-end-line="239" selection-end-column="13" />
+              <folding>
+                <element signature="e#98#129#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="make_cubes.py" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/sonde_humid_proj/src/make_cubes.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="543">
+              <caret line="122" column="0" selection-start-line="122" selection-start-column="0" selection-end-line="122" selection-end-column="0" />
+              <folding>
+                <element signature="e#134#145#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -78,8 +86,8 @@
       <file leaf-file-name="process_data.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/sonde_humid_proj/src/process_data.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1035">
-              <caret line="93" column="50" selection-start-line="93" selection-start-column="50" selection-end-line="93" selection-end-column="50" />
+            <state relative-caret-position="573">
+              <caret line="101" column="0" selection-start-line="101" selection-start-column="0" selection-end-line="101" selection-end-column="0" />
               <folding>
                 <element signature="e#0#11#0" expanded="true" />
               </folding>
@@ -90,8 +98,8 @@
       <file leaf-file-name="concatenate.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/sonde_humid_proj/src/concatenate.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="753">
-              <caret line="87" column="0" selection-start-line="87" selection-start-column="0" selection-end-line="87" selection-end-column="0" />
+            <state relative-caret-position="543">
+              <caret line="82" column="43" selection-start-line="82" selection-start-column="43" selection-end-line="82" selection-end-column="43" />
               <folding>
                 <marker date="1543564221669" expanded="true" signature="4154:4206" ph="..." />
               </folding>
@@ -99,42 +107,10 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ERA_climatology.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/sonde_humid_proj/src/ERA_climatology.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="570">
-              <caret line="38" column="30" selection-start-line="38" selection-start-column="30" selection-end-line="38" selection-end-column="30" />
-              <folding>
-                <element signature="e#1#12#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="tropopause_heights.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/sonde_humid_proj/plot/tropopause_heights.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="150">
-              <caret line="10" column="50" selection-start-line="10" selection-start-column="50" selection-end-line="10" selection-end-column="50" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="station_map.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/sonde_humid_proj/plot/station_map.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="45">
-              <caret line="3" column="18" selection-start-line="3" selection-start-column="18" selection-end-line="3" selection-end-column="18" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
       <file leaf-file-name="re_grid.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/sonde_humid_proj/src/re_grid.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="378">
+            <state relative-caret-position="-342">
               <caret line="84" column="96" selection-start-line="84" selection-start-column="96" selection-end-line="84" selection-end-column="96" />
               <folding>
                 <element signature="e#83#94#0" expanded="true" />
@@ -165,16 +141,16 @@
         <option value="$PROJECT_DIR$/sonde_humid_proj/src/concatenate.py" />
         <option value="$PROJECT_DIR$/sonde_humid_proj/src/condition.py" />
         <option value="$PROJECT_DIR$/sonde_humid_proj/src/my_filters.py" />
-        <option value="$PROJECT_DIR$/sonde_humid_proj/src/make_cubes.py" />
-        <option value="$PROJECT_DIR$/sonde_humid_proj/src/process_data.py" />
-        <option value="$PROJECT_DIR$/sonde_humid_proj/src/calculate.py" />
         <option value="$PROJECT_DIR$/sonde_humid_proj/src/read_files.py" />
         <option value="$PROJECT_DIR$/sonde_humid_proj/plot/temperature_profiles.py" />
         <option value="$PROJECT_DIR$/sonde_humid_proj/plot/tropopause_heights.py" />
-        <option value="$PROJECT_DIR$/sonde_humid_proj/src/ERA_climatology.py" />
         <option value="$PROJECT_DIR$/sonde_humid_proj/plot/station_map.py" />
         <option value="$PROJECT_DIR$/sonde_humid_proj/src/re_grid.py" />
         <option value="$PROJECT_DIR$/sonde_humid_proj/plot/compilation_plots.py" />
+        <option value="$PROJECT_DIR$/sonde_humid_proj/src/process_data.py" />
+        <option value="$PROJECT_DIR$/sonde_humid_proj/src/ERA_climatology.py" />
+        <option value="$PROJECT_DIR$/sonde_humid_proj/src/calculate.py" />
+        <option value="$PROJECT_DIR$/sonde_humid_proj/src/make_cubes.py" />
       </list>
     </option>
   </component>
@@ -511,7 +487,14 @@
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
-      <option name="time" value="1" />
+      <breakpoints>
+        <line-breakpoint enabled="true" type="python-line">
+          <url>file://$PROJECT_DIR$/sonde_humid_proj/src/ERA_climatology.py</url>
+          <line>1</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+      <option name="time" value="2" />
     </breakpoint-manager>
     <watches-manager />
   </component>
@@ -548,7 +531,9 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="195">
           <caret line="13" column="42" selection-start-line="13" selection-start-column="42" selection-end-line="13" selection-end-column="42" />
-          <folding />
+          <folding>
+            <element signature="e#98#129#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -557,7 +542,7 @@
         <state relative-caret-position="1320">
           <caret line="89" column="14" selection-start-line="89" selection-start-column="14" selection-end-line="89" selection-end-column="14" />
           <folding>
-            <element signature="e#134#145#0" expanded="false" />
+            <element signature="e#134#145#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -644,7 +629,9 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="30">
           <caret line="2" column="3" selection-start-line="2" selection-start-column="3" selection-end-line="2" selection-end-column="3" />
-          <folding />
+          <folding>
+            <element signature="e#98#129#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -653,7 +640,7 @@
         <state relative-caret-position="1320">
           <caret line="89" column="14" selection-start-line="89" selection-start-column="14" selection-end-line="89" selection-end-column="14" />
           <folding>
-            <element signature="e#134#145#0" expanded="false" />
+            <element signature="e#134#145#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -749,7 +736,9 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
+          <folding>
+            <element signature="e#98#129#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -780,52 +769,12 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/sonde_humid_proj/src/make_cubes.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1335">
-          <caret line="89" column="14" selection-start-line="89" selection-start-column="14" selection-end-line="89" selection-end-column="14" />
-          <folding>
-            <element signature="e#134#145#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/sonde_humid_proj/src/my_filters.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1515">
-          <caret line="110" column="64" selection-start-line="110" selection-start-column="64" selection-end-line="110" selection-end-column="64" />
-          <folding>
-            <element signature="e#73#104#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/sonde_humid_proj/src/read_files.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="135">
-          <caret line="9" column="0" selection-start-line="9" selection-start-column="0" selection-end-line="9" selection-end-column="38" />
-          <folding>
-            <element signature="e#226#257#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/sonde_humid_proj/src/level_one.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="207">
           <caret line="14" column="21" selection-start-line="14" selection-start-column="21" selection-end-line="14" selection-end-column="21" />
           <folding>
             <element signature="e#95#106#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/sonde_humid_proj/src/ERA_climatology.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="570">
-          <caret line="38" column="30" selection-start-line="38" selection-start-column="30" selection-end-line="38" selection-end-column="30" />
-          <folding>
-            <element signature="e#1#12#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -840,49 +789,11 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/sonde_humid_proj/plot/tropopause_heights.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="150">
-          <caret line="10" column="50" selection-start-line="10" selection-start-column="50" selection-end-line="10" selection-end-column="50" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/sonde_humid_proj/src/re_name_vars.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1050">
           <caret line="70" column="85" selection-start-line="70" selection-start-column="85" selection-end-line="70" selection-end-column="85" />
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/sonde_humid_proj/src/concatenate.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="753">
-          <caret line="87" column="0" selection-start-line="87" selection-start-column="0" selection-end-line="87" selection-end-column="0" />
-          <folding>
-            <marker date="1543564221669" expanded="true" signature="4154:4206" ph="..." />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/sonde_humid_proj/src/process_data.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1035">
-          <caret line="93" column="50" selection-start-line="93" selection-start-column="50" selection-end-line="93" selection-end-column="50" />
-          <folding>
-            <element signature="e#0#11#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/sonde_humid_proj/src/re_grid.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="378">
-          <caret line="84" column="96" selection-start-line="84" selection-start-column="96" selection-end-line="84" selection-end-column="96" />
-          <folding>
-            <element signature="e#83#94#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -894,20 +805,98 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/sonde_humid_proj/src/calculate.py">
+    <entry file="file://$PROJECT_DIR$/sonde_humid_proj/src/read_files.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="150">
-          <caret line="10" column="33" selection-start-line="10" selection-start-column="33" selection-end-line="10" selection-end-column="33" />
+        <state relative-caret-position="-972">
+          <caret line="239" column="19" selection-start-line="239" selection-start-column="19" selection-end-line="239" selection-end-column="19" />
+          <folding>
+            <element signature="e#226#257#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/sonde_humid_proj/src/re_grid.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-342">
+          <caret line="84" column="96" selection-start-line="84" selection-start-column="96" selection-end-line="84" selection-end-column="96" />
+          <folding>
+            <element signature="e#83#94#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/sonde_humid_proj/src/my_filters.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1560">
+          <caret line="110" column="64" selection-start-line="110" selection-start-column="64" selection-end-line="110" selection-end-column="64" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/sonde_humid_proj/src/concatenate.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="543">
+          <caret line="82" column="43" selection-start-line="82" selection-start-column="43" selection-end-line="82" selection-end-column="43" />
+          <folding>
+            <marker date="1543564221669" expanded="true" signature="4154:4206" ph="..." />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/sonde_humid_proj/plot/compilation_plots.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="708">
-          <caret line="78" column="4" selection-start-line="78" selection-start-column="4" selection-end-line="78" selection-end-column="4" />
+        <state relative-caret-position="1878">
+          <caret line="135" column="0" selection-start-line="135" selection-start-column="0" selection-end-line="135" selection-end-column="0" />
           <folding>
             <element signature="e#0#11#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/sonde_humid_proj/src/ERA_climatology.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="570">
+          <caret line="38" column="43" selection-start-line="38" selection-start-column="43" selection-end-line="38" selection-end-column="43" />
+          <folding>
+            <element signature="e#1#12#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/sonde_humid_proj/plot/tropopause_heights.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="333">
+          <caret line="26" column="0" selection-start-line="26" selection-start-column="0" selection-end-line="26" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/sonde_humid_proj/src/process_data.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="573">
+          <caret line="101" column="0" selection-start-line="101" selection-start-column="0" selection-end-line="101" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#11#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/sonde_humid_proj/src/make_cubes.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="543">
+          <caret line="122" column="0" selection-start-line="122" selection-start-column="0" selection-end-line="122" selection-end-column="0" />
+          <folding>
+            <element signature="e#134#145#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/sonde_humid_proj/src/calculate.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="618">
+          <caret line="239" column="13" selection-start-line="239" selection-start-column="13" selection-end-line="239" selection-end-column="13" />
+          <folding>
+            <element signature="e#98#129#0" expanded="true" />
           </folding>
         </state>
       </provider>

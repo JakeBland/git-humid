@@ -36,4 +36,4 @@ def find_mean_trop_GPH(plat, plon):
                    alpha*((1 - beta)*gpm.data[lat_idx+1, lon_idx] + beta*gpm.data[lat_idx+1, lon_idx+1]))
 
     # convert geopotential to geopotential height
-    return gp_at_point/9.80655
+    return calculate.gp_to_gph(gp_at_point)

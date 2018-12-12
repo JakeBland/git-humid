@@ -33,18 +33,7 @@ def process_single_ascent(source, station_number, time, dtype, filter_dic,
 
     # calculate variables such that all profiles will have, as a minimum, 
     # fields of altitude, p, T, theta, q, RHi and RHw
-    if dtype == 'UKMO':
-        cubelist.append(make_cubes.temperature_cube(cubelist))
-    else:
-        cubelist.append(make_cubes.theta_cube(cubelist))
-        pass
-
-    if dtype == 'sonde':
-        cubelist.append(make_cubes.specific_humidity_cube(cubelist))
-        pass
-
-    cubelist.append(make_cubes.relative_humidity_cube(cubelist, 'liquid_water'))
-    cubelist.append(make_cubes.relative_humidity_cube(cubelist, 'ice'))
+    cubelist = add_humidity_fields(cubelist, dtype)
 
     # filter all variables using kernel smoothing [only sonde]
     if dtype == 'sonde':
@@ -69,20 +58,46 @@ def process_single_ascent(source, station_number, time, dtype, filter_dic,
     return cubelist_smooth, flag
 
 
-def process_regridded_dictionary(source, station_number, time, filter_dic, kind = 'linear'):
+def add_humidity_fields(cubelist, dtype):
+
+    if dtype == 'UKMO':
+        cubelist.append(make_cubes.temperature_cube(cubelist))
+    else:
+        cubelist.append(make_cubes.theta_cube(cubelist))
+        pass
+
+    if dtype == 'sonde':
+        cubelist.append(make_cubes.specific_humidity_cube(cubelist))
+        pass
+
+    cubelist.append(make_cubes.relative_humidity_cube(cubelist, 'liquid_water'))
+    cubelist.append(make_cubes.relative_humidity_cube(cubelist, 'ice'))
+    cubelist.append(make_cubes.relative_humidity_cube(cubelist, 'mixed'))
+
+    return cubelist
+
+
+def process_re_gridded(cubelist_dic):
     """
     Now data has been put onto new vertical coordinate, calculate vertical 
     derivatives & re-grid these onto same new vertical coordinate
-    :param source:
-    :param station_number:
-    :param time:
-    :param filter_dic:
-    :param kind:
+    And also difference fields
+    :param cubelist_dic:
     :return:
     """
-    pass
-    # read in cubelist dictionary
+    # add gradient fields
+    for key in cubelist_dic:
+        cubelist = cubelist_dic[key]
+        cubelist = add_gradient_fields(cubelist)
+        # add difference fields
+        cubelist = add_difference_fields(cubelist)
 
+
+
+def add_gradient_fields(cubelist):
+
+    # create seperate cubelist for difference fields
+    grad_cubelist = iris.cube.CubeList([])
     # calculate dtheta/dz
 
     # calculate N**2 = g/theta dtheta/dz
@@ -91,4 +106,13 @@ def process_regridded_dictionary(source, station_number, time, filter_dic, kind 
 
     # I'm sure there was another useful derivative, that I forgot to write down
 
-    # return a cubelist_dic with the new variables
+    # re-grid seperate cubelist to same vertical coordinate as everything else
+
+    # return a cubelist with the new variables
+
+
+
+
+def add_difference_fields(cubelist):
+
+    pass
