@@ -95,7 +95,16 @@ def profile_plots(model_type = 'ukmo', variable = 'specific_humidity', differenc
     
     
 def scatter_plots(bin_width, variable_x, variable_y, variable_colour = None, variable_size = None, variable_shape = None):
-    # this is why the cubelists need to have seperate difference fields - need to re-run
+    # have a seperate wrapper function which calls this and calculates difference fields if desired 'on the fly'
+    """
+
+    :param bin_width: number
+    :param variable_x: cube
+    :param variable_y: cube
+    :param variable_colour: cube
+    :param variable_size: cube
+    :param variable_shape: cube
+    """
 
     two_sec = station_code_list_two_sec()
 
@@ -105,36 +114,18 @@ def scatter_plots(bin_width, variable_x, variable_y, variable_colour = None, var
 
     for code in two_sec:
         # read in data for desired variable
-        model = iris.load('/home/users/bn826011/PhD/radiosonde/NAWDEX_timeseries/high_res/' + code + '/' + model_type + '_2D_trop_relative.nc',variable)[0]
+        cube = iris.load('/home/users/bn826011/PhD/radiosonde/NAWDEX_timeseries/high_res/' + code + '/' + dtype + '_2D_trop_relative.nc', variable)[0]
         # read in altitude for the first one
         if first:
             altitude = model.coord('altitude')
             first = False
-        # here is where one would read in and apply a filter if desired
+        # here is where one would read in and apply a condition if desired
 
         # then take the average over all times for a single station, leaving an average vertical profile
         # note: I am concerned here about the handling of np.nan values
         model_mean = model.collapsed('time', iris.analysis.MEAN)
 
-        # and do this for sonde if a difference is requested
-        if difference:
-            sonde = iris.load('/home/users/bn826011/PhD/radiosonde/NAWDEX_timeseries/high_res/' + code + '/sonde_2D_trop_relative.nc', variable)[0]
-            # filter here (optional)
-            sonde_mean = sonde.collapsed('time', iris.analysis.MEAN)
 
-            if difference == 'fractional':
-
-                cube = (model_mean - sonde_mean)/sonde_mean
-                cube.rename(variable + '_fractional_difference')
-
-            else:
-
-                cube = model_mean - sonde_mean
-                cube.rename(variable + '_difference')
-
-        else:
-
-            cube = model_mean
 
 
 

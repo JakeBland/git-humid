@@ -69,8 +69,6 @@ def concatenate_cubelist_dictionary(source, station_number, filter_dic = {'name'
     # for the first time, create first cubelist_dic
     cubelist_dictionary = re_grid_trop_0(source, station_number, datetime_list[0], 
                                                               filter_dic, kind)
-    # and add gradient fields
-    cubelist_dictionary = process_re_gridded(cubelist_dictionary)
 
     # for the rest of the times
     for time in datetime_list[1:]:
@@ -80,9 +78,6 @@ def concatenate_cubelist_dictionary(source, station_number, filter_dic = {'name'
         
         if new_cubelist_dic:
             # it will return False if there is no found tropopause
-
-            # and add gradient fields
-            new_cubelist_dic = process_re_gridded(new_cubelist_dic)
         
             # for each key in dictionary:
             for key in cubelist_dictionary:

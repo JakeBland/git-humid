@@ -86,12 +86,11 @@ def add_humidity_fields(cubelist, dtype):
     return cubelist
 
 
-def process_re_gridded(cubelist_dic):
+def process_concatenated(cubelist_dic):
     """
-    Now data has been put onto new vertical coordinate, calculate vertical 
-    derivatives & re-grid these onto same new vertical coordinate
-    And also difference fields
-    :param cubelist_dic: dictionary of re-gridded cubelists
+    Now data has been put onto new vertical coordinate, and concatentated
+    along time, calculate vertical derivatives and also difference fields
+    :param cubelist_dic: dictionary of 2D cubelists
     :return: dictionary of extended cubelists with gradient fields
     """
     for key in cubelist_dic:
