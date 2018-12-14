@@ -97,5 +97,5 @@ def station_markers(directory = '/home/users/pr902839/datasets/nawdex/radiosonde
     
     cbar.set_label('surface altitude, km', rotation=270)
     plt.title('Position of sonde release sites, size indicates no. of sondes')
-    plt.savefig('/home/users/bn826011/PhD/git_humid/sonde_humid_proj/figures/sonde_locations.jpg')
+    plt.savefig('/home/users/bn826011/PhD/figures/sonde_locations.jpg')
     # save

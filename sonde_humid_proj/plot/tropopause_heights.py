@@ -54,4 +54,4 @@ def compare_trop_heights(station_code):
     plt.title('Tropopause height from obs & analysis compared to reference for ' + station_code)
 
     plt.savefig(
-        '/home/users/bn826011/PhD/git_humid/sonde_humid_proj/figures/Tropopause_timeseries/' + station_code + '.jpg')
+        '/home/users/bn826011/PhD/figures/Tropopause_timeseries/' + station_code + '.jpg')

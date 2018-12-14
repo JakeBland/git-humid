@@ -90,7 +90,7 @@ def profile_plots(model_type = 'ukmo', variable = 'specific_humidity', differenc
     plt.ylabel('tropopause_relative_altitude, m')
     plt.xlabel(variable + ' ' + dlab)
     
-    plt.savefig('/home/users/bn826011/PhD/git_humid/sonde_humid_proj/figures/' +
+    plt.savefig('/home/users/bn826011/PhD/figures/' +
                 model_type + '_' + variable + '_' + dlab + '_profile.jpg')
     
     
