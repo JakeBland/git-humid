@@ -226,7 +226,7 @@ def add_sonde_metadata(cubelist_original, a = 6371229.0):
     # create coordinates
 
     # make scalar cube of time_release, and add this to cubelist
-    cubelist.append(make_time_cube(time_elapsed))
+    cubelist.append(make_time_cube(time_release, cube))
     
     for cube in cubelist:
         
@@ -240,10 +240,11 @@ def add_sonde_metadata(cubelist_original, a = 6371229.0):
     return cubelist
 
 
-def make_time_cube(time):
+def make_time_cube(time, cube):
     """
     Make scalar cube of datetime object
     :param time: datetime object
+    :param cube: arbitrary cube
     :return: scalar cube
     """
     time_elapsed = time - datetime.datetime(1970, 1, 1)
@@ -253,7 +254,8 @@ def make_time_cube(time):
 
     # return scalar cube of time
     return iris.cube.Cube(t_hours, standard_name = 'time',
-                          units = Unit('hours since 1970-01-01 00:00:00', calendar='gregorian'))
+                          units = Unit('hours since 1970-01-01 00:00:00', calendar='gregorian'),
+                          attributes = cube.attributes)
     
 def make_alt_cube(test_cube):
     """

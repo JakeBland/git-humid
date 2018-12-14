@@ -40,9 +40,9 @@ def process_single_ascent(source, station_number, time, dtype, filter_dic,
     # fields of altitude, p, T, theta, q, RHi and RHw
     cubelist = add_humidity_fields(cubelist, dtype)
 
+    altitude = cubelist.extract(iris.Constraint(name='altitude'))[0]
     # filter all variables using kernel smoothing [only sonde]
     if dtype == 'sonde':
-        altitude = cubelist.extract(iris.Constraint(name='altitude'))[0]
         cubelist.remove(altitude)
         # as the vertical coordinate I don't think we want this smoothed (?) (can always remove this line)
         cubelist_smooth = filter_cubelist(cubelist, altitude, filter_dic)

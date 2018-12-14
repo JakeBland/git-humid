@@ -5,7 +5,7 @@ into one big dictionary of all data from a given single site in Sept/Oct 2016
 import datetime
 import iris
 from re_grid import re_grid_trop_0
-from process_data import process_re_gridded
+from process_data import process_concatenated
 
 #from iris.experimental.equalise_cubes import equalise_attributes
 #from iris.util import unify_time_units
@@ -95,6 +95,9 @@ def concatenate_cubelist_dictionary(source, station_number, filter_dic = {'name'
         twoD_cubelist_dictionary[key] = cubelist_dictionary[key].merge()
         # actually either need to use merge, or add new time dimension coord
         #assert len(twoD_cubelist_dictionary[key]) == len(new_cubelist_dic[key])
+
+        # add gradient fields to cube list
+        twoD_cubelist_dictionary[key] = process_concatenated(twoD_cubelist_dictionary[key])
 
         save_folder = '/home/users/bn826011/PhD/radiosonde/NAWDEX_timeseries/' + source + '_' + station_number
         # where do I actually have space to save one of these for each site???
