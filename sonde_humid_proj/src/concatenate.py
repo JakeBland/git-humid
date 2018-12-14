@@ -5,6 +5,7 @@ into one big dictionary of all data from a given single site in Sept/Oct 2016
 import datetime
 import iris
 from re_grid import re_grid_trop_0
+from process_data import process_re_gridded
 
 #from iris.experimental.equalise_cubes import equalise_attributes
 #from iris.util import unify_time_units
@@ -68,7 +69,8 @@ def concatenate_cubelist_dictionary(source, station_number, filter_dic = {'name'
     # for the first time, create first cubelist_dic
     cubelist_dictionary = re_grid_trop_0(source, station_number, datetime_list[0], 
                                                               filter_dic, kind)
-    # this will actually be '= process_regridded_dictionary(source, station_number, etc.)' once I write it
+    # and add gradient fields
+    cubelist_dictionary = process_re_gridded(cubelist_dictionary)
 
     # for the rest of the times
     for time in datetime_list[1:]:
@@ -78,6 +80,9 @@ def concatenate_cubelist_dictionary(source, station_number, filter_dic = {'name'
         
         if new_cubelist_dic:
             # it will return False if there is no found tropopause
+
+            # and add gradient fields
+            new_cubelist_dic = process_re_gridded(new_cubelist_dic)
         
             # for each key in dictionary:
             for key in cubelist_dictionary:

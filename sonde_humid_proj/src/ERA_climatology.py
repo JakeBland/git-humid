@@ -1,3 +1,6 @@
+"""
+Collection of functions to handle ERA_Interim data
+"""
 
 import iris
 import iris.analysis

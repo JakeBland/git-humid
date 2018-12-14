@@ -143,12 +143,12 @@ def re_grid_trop_0(source, station_number, time, filter_dic, kind = 'linear', th
         
         cubelist = cubelist_dic[key]
 
-        altitude = cubelist.extract(alt_const)[0]
+        reference_altitude = cubelist.extract(alt_const)[0].copy()
+        # this .copy() is important s.t. geometric altitude is preserved as a cube
 
-        altitude.data = altitude.data - trop_alt
+        reference_altitude.data = reference_altitude.data - trop_alt
 
-        cubelist_dic[key] = re_grid_1d(cubelist, altitude, -10000, 10000, 10, kind)
-
+        cubelist_dic[key] = re_grid_1d(cubelist, reference_altitude, -10000, 10000, 10, kind)
 
     return cubelist_dic
     # it would be nice to produce a plot of superimposed temperature profiles, with dotted tropopauses to compare
