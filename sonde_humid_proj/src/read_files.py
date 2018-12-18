@@ -173,21 +173,24 @@ def add_ECAN_metadata(filepath, filename, cubelist_original, a = 6371229.0):
     
     tm = iris.coords.DimCoord(t_hours, standard_name = 'time', units=Unit('hours since 1970-01-01 00:00:00', calendar='gregorian'))
     # create time coordinate
-
-    lat = iris.cube.Cube(metalist[1].data, standard_name = 'latitude', units = 'degrees', attributes = cubelist[0].attributes)
-    lon = iris.cube.Cube(metalist[2].data, standard_name='longitude', units='degrees', attributes=cubelist[0].attributes)
-    # add latitude and longitude as scalar cubes
+    
 
     # lat = iris.coords.DimCoord(round(metalist[1].data, 1), standard_name = 'latitude', units = 'degrees', coord_system=GeogCS(a))
     # lon = iris.coords.DimCoord(round(metalist[2].data, 1), standard_name = 'longitude', units = 'degrees', coord_system=GeogCS(a))
     # no longer desired and replaced by cubes
-
-    cubelist.append([lat, lon])
+    
     
     for cube in cubelist:
         
         cube.add_aux_coord(tm)
         cube.attributes['source'] = 'ECMWF Analysis Data'
+        
+    lat = iris.cube.Cube(metalist[1].data, standard_name = 'latitude', units = 'degrees', attributes = cube.attributes, aux_coords_and_dims = [(tm, None)])
+    lon = iris.cube.Cube(metalist[2].data, standard_name='longitude', units='degrees', attributes=cube.attributes, aux_coords_and_dims = [(tm, None)])
+    # add latitude and longitude as scalar cubes
+    
+    cubelist.append(lat)
+    cubelist.append(lon)
         
     return cubelist
 
@@ -206,15 +209,16 @@ def change_ukmo_metadata(cubelist_original):
     latitude = cube.coord('latitude').points
     longitude = cube.coord('longitude').points
 
-    lat = iris.cube.Cube(latitude, standard_name='latitude', units='degrees', attributes=cube.attributes)
-    lon = iris.cube.Cube(longitude, standard_name='longitude', units='degrees', attributes=cube.attributes)
+    lat = iris.cube.Cube(latitude, standard_name='latitude', units='degrees', attributes=cube.attributes, aux_coords_and_dims = [(cube.coord('time'), None)])
+    lon = iris.cube.Cube(longitude, standard_name='longitude', units='degrees', attributes=cube.attributes, aux_coords_and_dims = [(cube.coord('time'), None)])
 
     for cube in cubelist:
 
         cube.remove_coord('latitude')
         cube.remove_coord('longitude')
 
-    cubelist.append([lat, lon])
+    cubelist.append(lat)
+    cubelist.append(lon)
 
     return cubelist
 

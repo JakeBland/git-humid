@@ -31,7 +31,7 @@ def process_single_ascent(source, station_number, time, dtype, filter_dic,
     """
     variables = ['air_pressure', 'air_temperature', 'air_potential_temperature', 
                  'dew_point_temperature', 'specific_humidity', 'altitude', 
-                 'mass_fraction_of_cloud_ice_in_air', 'mass_fraction_of_cloud_liquid_water_in_air'
+                 'mass_fraction_of_cloud_ice_in_air', 'mass_fraction_of_cloud_liquid_water_in_air',
                  'latitude', 'longitude']
     # not all types will have all variables, this will be dealt with later
 
@@ -57,9 +57,7 @@ def process_single_ascent(source, station_number, time, dtype, filter_dic,
     trop_alt, flag = calculate.tropopause_height(temperature.data, altitude.data, flag)[:-1]
     cubelist_smooth.append(iris.cube.Cube(trop_alt, standard_name = 'tropopause_altitude', 
                                           units = 'm', aux_coords_and_dims = 
-                                          [(altitude.coord('latitude'), None), 
-                                           (altitude.coord('longitude'), None), 
-                                           (altitude.coord('time'), None)]))
+                                          [(altitude.coord('time'), None)]))
 
     return cubelist_smooth, flag
 

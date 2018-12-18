@@ -24,8 +24,8 @@ def re_grid_1d(variables, dimension, lower, upper, spacing, kind = 'linear'):
     new_dim = iris.coords.DimCoord(new_dimension, standard_name = dimension.standard_name,
                                    units = dimension.units)
 
-    lat = variables[0].coord('latitude')
-    lon = variables[0].coord('longitude')
+    #lat = variables[0].coord('latitude')
+    #lon = variables[0].coord('longitude')
     time = variables[0].coord('time')
     # read coords of lat, lon & time from the first variable (as they should all be the same)
 
@@ -47,8 +47,7 @@ def re_grid_1d(variables, dimension, lower, upper, spacing, kind = 'linear'):
                                             long_name=cube.long_name, var_name=cube.var_name, 
                                             units=cube.units, attributes=cube.attributes,
                                             dim_coords_and_dims=[(new_dim, 0)], 
-                                            aux_coords_and_dims=[(lat,None), (lon,None), 
-                                                                 (time,None)]))
+                                            aux_coords_and_dims=[(time,None)]))#(lat,None), (lon,None),
              # create cube of new interpolated variable on new dimcoord and append to list
 
     return new_cubes

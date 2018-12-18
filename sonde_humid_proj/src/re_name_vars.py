@@ -24,8 +24,8 @@ def var_name_array():
     ['dew_point_temperature', 'empty', 'dewpointTemperature', 'empty'],
     ['wind_speed', 'empty','windSpeed', 'empty'],
     ['wind_to_direction', 'empty', 'windDirection', 'empty'],
-    ['latitude', 'empty', 'latitudeDisplacement', 'empty'],
-    ['longitude', 'empty', 'longitudeDisplacement', 'empty'],
+    ['latitude', 'latitude', 'latitudeDisplacement', 'latitude'],
+    ['longitude', 'longitude', 'longitudeDisplacement', 'longitude'],
     ['upward_air_velocity', 'empty', 'empty', 'OMEGA'],
     [None, None, None, None]]
     # names of all used variables, 'empty' indicating not used
