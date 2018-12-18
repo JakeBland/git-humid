@@ -6,6 +6,7 @@ import datetime
 import iris
 from re_grid import re_grid_trop_0
 from process_data import add_gradient_fields
+import time
 
 #from iris.experimental.equalise_cubes import equalise_attributes
 #from iris.util import unify_time_units
@@ -95,14 +96,39 @@ def concatenate_cubelist_dictionary(source, station_number, filter_dic = {'name'
         twoD_cubelist_dictionary[key] = cubelist_dictionary[key].merge()
         # actually either need to use merge, or add new time dimension coord
         #assert len(twoD_cubelist_dictionary[key]) == len(new_cubelist_dic[key])
-
+        
         # add gradient fields to cube list
         twoD_cubelist_dictionary[key] = add_gradient_fields(twoD_cubelist_dictionary[key])
 
-        save_folder = '/home/users/bn826011/PhD/radiosonde/NAWDEX_timeseries/' + source + '_' + station_number
+        save_folder = '/home/users/bn826011/PhD/radiosonde/NAWDEX_timeseries/high_res/' + source + '_' + station_number
         # where do I actually have space to save one of these for each site???
 
         iris.save(twoD_cubelist_dictionary[key], save_folder + '/' + key + '_2D_trop_relative.nc')
 
     #return twoD_cubelist_dictionary
     # but don't actually return if it has actually saved
+
+
+
+def main_run_this():
+    
+    two_sec = [['EMN', '02365'], ['EMN', '02527'], 
+        ['EMN', '03005'], ['EMN', '03238'], ['EMN', '03354'], ['EMN', '03808'],
+        ['EMN', '03882'], ['EMN', '03918'], ['EMN', '04270'], ['EMN', '04320'],
+        ['EMN', '04339'], ['EMN', '04360'], ['EMN', '06011'], ['EMN', '10035'],
+        ['EMN', '10113'], ['EMN', '10184'], ['EMN', '10238'], ['EMN', '10393'],
+        ['EMN', '10410'], ['EMN', '10548'], ['EMN', '10618'], ['EMN', '10739'],
+        ['EMN', '10771'], ['EMN', '10868'], 
+        ['DLR', '04018'], ['IMO', '04018'], ['NCAS', '03501']]
+
+    for pair in two_sec:
+        print pair
+        startime = time.time()
+        try:
+            concatenate_cubelist_dictionary(pair[0], pair[1])
+        except Exception as e:
+            print pair[0] + ' ' + pair[1] + ' concatenation has failed'
+            print e
+        endtime = time.time()
+        elapsed = (endtime - startime)/60
+        print pair[1] + ' file has taken ' + str(elapsed) + ' minutes'

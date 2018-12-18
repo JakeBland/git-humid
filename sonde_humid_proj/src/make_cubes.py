@@ -103,6 +103,9 @@ def theta_gradient_cube(cubelist):
     """
     theta = cubelist.extract(iris.Constraint(name = 'air_potential_temperature'))[0]
     altitude = cubelist.extract(iris.Constraint(name = 'altitude'))[0]
+    
+    print theta
+    print altitude
 
     dthetadz = calculate.array_gradient_axis1(theta.data, altitude.data)
 
@@ -134,7 +137,7 @@ def Brunt_Vaisala_square_cube(cubelist):
     N2.units = 's-2'
     N2.data = bvf2
 
-    return bvf2
+    return N2
 
 
 def q_gradient_cube(cubelist):
@@ -144,6 +147,7 @@ def q_gradient_cube(cubelist):
                      second dimension height, containing specific humidity
     :return: cube of vertical specific humidity gradient
     """
+    print cubelist
     spec_hum = cubelist.extract(iris.Constraint(name='specific_humidity'))[0]
     altitude = cubelist.extract(iris.Constraint(name='altitude'))[0]
 
@@ -219,3 +223,42 @@ def difference_cube(cubelist, comparison, variable, fractional = False, normalis
 
 
 
+def difference_fields_selective(cubelist, sonde_cubelist, variable_name):
+    # return cube of variable_name
+    # already known that 'difference' is in variable_name
+    # expect either 'variable_difference', 'variable_fractional_difference' or
+    # 'variable_normalised_difference'
+
+    if 'fractional' or 'normalised' in variable_name:
+
+        variable = variable_name[:-22]
+        # remove string '_fractional_difference' or '_normalised_difference' from the end
+
+    else:
+
+        variable = variable_name[:-11]
+        # remove string '_difference' from the end
+
+    cube = cubelist.extract(iris.Constraint(name=variable))
+    reference_cube = sonde_cubelist.extract(iris.Constraint(name=variable))
+    # extract cubes
+
+    difference = cube - reference_cube
+
+    if 'fractional' in variable_name:
+
+        cube = difference / reference_cube
+
+    elif 'normalised' in variable_name:
+
+        norm = (cube ** 2 + reference_cube ** 2) ** .5
+
+        cube = difference / norm
+
+    else:
+
+        cube = difference
+
+    cube.rename(variable_name)
+
+    return cube

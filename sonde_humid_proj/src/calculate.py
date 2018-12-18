@@ -204,6 +204,7 @@ def gradient(v1, v2, v3, c1, c2, c3):
     """
     A = ((c3 - c2)/(c1 - c2))
     # this expression can be derived easily using taylor series
+    print np.shape((A*v1 + (1/A - A)*v2 - v3/A)/(c3 - c1))
     return (A*v1 + (1/A - A)*v2 - v3/A)/(c3 - c1)
 
 def array_gradient_axis1(var, coord):
@@ -219,7 +220,7 @@ def array_gradient_axis1(var, coord):
     var_grad[:,0] = gradient(var[:,1], var[:,0], var[:,2], coord[:,1], coord[:,0], coord[:,2])
     var_grad[:,-1] = gradient(var[:,-3], var[:,-1], var[:,-2], coord[:,-3], coord[:,-1], coord[:,-2])
     # in the middle calculate gradient using points either side
-    var_grad[1:-1] = gradient(var[:,:-2], var[:,1:-1], var[:,2:], coord[:,:-2], coord[:, 1:-1], coord[:, 2:])
+    var_grad[:,1:-1] = gradient(var[:,:-2], var[:,1:-1], var[:,2:], coord[:,:-2], coord[:, 1:-1], coord[:, 2:])
 
     return var_grad
 
