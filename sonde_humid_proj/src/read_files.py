@@ -172,17 +172,50 @@ def add_ECAN_metadata(filepath, filename, cubelist_original, a = 6371229.0):
     # convert this list of strings into an interpretable object
     
     tm = iris.coords.DimCoord(t_hours, standard_name = 'time', units=Unit('hours since 1970-01-01 00:00:00', calendar='gregorian'))
-    lat = iris.coords.DimCoord(metalist[1].data, standard_name = 'latitude', units = 'degrees', coord_system=GeogCS(a))
-    lon = iris.coords.DimCoord(metalist[2].data, standard_name = 'longitude', units = 'degrees', coord_system=GeogCS(a))
-    # create coordinates
+    # create time coordinate
+
+    lat = iris.cube.Cube(metalist[1].data, standard_name = 'latitude', units = 'degrees', attributes = cubelist[0].attributes)
+    lon = iris.cube.Cube(metalist[2].data, standard_name='longitude', units='degrees', attributes=cubelist[0].attributes)
+    # add latitude and longitude as scalar cubes
+
+    # lat = iris.coords.DimCoord(round(metalist[1].data, 1), standard_name = 'latitude', units = 'degrees', coord_system=GeogCS(a))
+    # lon = iris.coords.DimCoord(round(metalist[2].data, 1), standard_name = 'longitude', units = 'degrees', coord_system=GeogCS(a))
+    # no longer desired and replaced by cubes
+
+    cubelist.append([lat, lon])
     
     for cube in cubelist:
         
         cube.add_aux_coord(tm)
-        cube.add_aux_coord(lat)
-        cube.add_aux_coord(lon)
         cube.attributes['source'] = 'ECMWF Analysis Data'
         
+    return cubelist
+
+
+def change_ukmo_metadata(cubelist_original):
+    # differences in the values of longitude are causing issues for the calculation
+    # of difference fields
+    # to resolve this, remove lat and lon as coordinates, and add them as scalar cubes instead
+
+    # cubelist = cubelist_original.copy()
+    cubelist = cubelist_original
+
+    cube = cubelist[0]
+    #fairly arbitrary
+
+    latitude = cube.coord('latitude').points
+    longitude = cube.coord('longitude').points
+
+    lat = iris.cube.Cube(latitude, standard_name='latitude', units='degrees', attributes=cube.attributes)
+    lon = iris.cube.Cube(longitude, standard_name='longitude', units='degrees', attributes=cube.attributes)
+
+    for cube in cubelist:
+
+        cube.remove_coord('latitude')
+        cube.remove_coord('longitude')
+
+    cubelist.append([lat, lon])
+
     return cubelist
 
 
@@ -221,9 +254,11 @@ def add_sonde_metadata(cubelist_original, a = 6371229.0):
     # convert this list of strings into an interpretable object
     
     tm = iris.coords.DimCoord(t_hours, standard_name = 'time', units=Unit('hours since 1970-01-01 00:00:00', calendar='gregorian'))
-    lat = iris.coords.DimCoord(cube.attributes['stationLatitude'], standard_name = 'latitude', units = 'degrees', coord_system=GeogCS(a))
-    lon = iris.coords.DimCoord(cube.attributes['stationLongitude'], standard_name = 'longitude', units = 'degrees', coord_system=GeogCS(a))
-    # create coordinates
+    # create time coordinate
+
+    # lat = iris.coords.DimCoord(np.array(round(cube.attributes['stationLatitude'],1)), standard_name = 'latitude', units = 'degrees', coord_system=GeogCS(a))
+    # lon = iris.coords.DimCoord(np.array(round(cube.attributes['stationLongitude'],1)), standard_name = 'longitude', units = 'degrees', coord_system=GeogCS(a))
+    # these are now no longer desired and will be replaced by cubes
 
     # make scalar cube of time_release, and add this to cubelist
     cubelist.append(make_time_cube(time_release, cube))
@@ -231,8 +266,6 @@ def add_sonde_metadata(cubelist_original, a = 6371229.0):
     for cube in cubelist:
         
         cube.add_aux_coord(tm)
-        cube.add_aux_coord(lat)
-        cube.add_aux_coord(lon)
         # and delete 'launchTime' attribute, now that this is a coordinate
         del cube.attributes['launchTime']
         # this will allow cubes to be merged along the time dimension
@@ -313,6 +346,8 @@ def read_data(source, station_number, time, cf_variables = None, model = None, l
         # This line is necessary, as the files contain two cubes of air_pressure
         # we desire the one on the same number of levels as theta and humidity
         cubelist = select_lead_time(cubelist, time, lead_time)
+        # change latitude & longitude metadata
+        cubelist = change_ukmo_metadata(cubelist)
         
     elif model == 'ECAN':
             

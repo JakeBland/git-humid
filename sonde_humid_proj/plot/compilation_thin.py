@@ -12,9 +12,9 @@ from src import make_cubes
 
 def station_code_list_two_sec():
 
-    return ['EMN_02365', 'EMN_02527', 'EMN_03005',
-               'EMN_03238', 'EMN_03354', 'EMN_03808',
-               'EMN_03882', 'EMN_03918', 'EMN_04270', 'EMN_04320',
+#    return ['EMN_02365', 'EMN_02527', 'EMN_03005',
+#               'EMN_03238', 'EMN_03354', 'EMN_03808',
+     return          ['EMN_03882', 'EMN_03918', 'EMN_04270', 'EMN_04320',
                'EMN_04339', 'EMN_04360', 'EMN_06011', 'EMN_10035',
                'EMN_10113', 'EMN_10184', 'EMN_10238', 'EMN_10393',
                'EMN_10410', 'EMN_10548', 'EMN_10618', 'EMN_10739',
@@ -30,17 +30,21 @@ def profile_wrap(model_type, variable):
     first = True
 
     for code in two_sec:
+        print code
         # read in data for desired variable
         cubelist = iris.load('/home/users/bn826011/PhD/radiosonde/NAWDEX_timeseries/high_res/' + code + '/' + model_type + '_2D_trop_relative.nc')
         # and sonde
         sonde_cubelist = iris.load('/home/users/bn826011/PhD/radiosonde/NAWDEX_timeseries/high_res/' + code + '/' + 'sonde' + '_2D_trop_relative.nc')
 
-        cubelist = add_difference_fields(cubelist, sonde_cubelist)
-        # the idea is that adding the difference fields should be relatively fast
-        # and that it may be more efficient to calculate them every time than to save them
-        # and load files which are now much larger
+        if 'difference' in variable:
+            # read in comparison sonde date
+            sonde_cubelist = iris.load('/home/users/bn826011/PhD/radiosonde/NAWDEX_timeseries/high_res/' + code + '/' + 'sonde' + '_2D_trop_relative.nc')
 
-        cube = cubelist.extract(iris.Constraint(name = variable))[0]
+            cube = make_cubes.difference_fields_selective(cubelist, sonde_cubelist, variable)
+
+        else:
+            
+            cube = cubelist.extract(iris.Constraint(name = variable))[0]
 
         # then take the average over all times for a single station, leaving an average vertical profile
         # note: I am concerned here about the handling of np.nan values
@@ -50,11 +54,11 @@ def profile_wrap(model_type, variable):
 
             altitude = cube_mean.coord('altitude')
             first = False
-
+        
         # put these values into a dictionary of dictionaries
-        station_dic[code] = cube
+        station_dic[code] = cube_mean
     # create empty array for mean & st.dev
-
+        
     for n, key in enumerate(station_dic):
         if not n:
             profile_array = np.array([station_dic[key].data])
@@ -65,10 +69,11 @@ def profile_wrap(model_type, variable):
     all_stdev = np.std(profile_array, axis=0)
 
     fig, ax = plt.subplots()
-
+    
     #ax.fill([[all_mean[0]], all_mean-all_stdev, [all_mean[-1]], np.flipud(all_mean+all_stdev)], [, altitude.points, np.flipud(altitude.points)])
     ax.plot([0, 0], [-1e4, 1e4], color = 'b')
-    ax.plot([-1, 1], [0, 0], color = 'b')
+    ax.plot([np.nanmin(all_mean), np.nanmax(all_mean)], [0, 0], color = 'b')
+    
     
     for key in station_dic:
 

@@ -31,7 +31,8 @@ def process_single_ascent(source, station_number, time, dtype, filter_dic,
     """
     variables = ['air_pressure', 'air_temperature', 'air_potential_temperature', 
                  'dew_point_temperature', 'specific_humidity', 'altitude', 
-                 'mass_fraction_of_cloud_ice_in_air', 'mass_fraction_of_cloud_liquid_water_in_air']
+                 'mass_fraction_of_cloud_ice_in_air', 'mass_fraction_of_cloud_liquid_water_in_air'
+                 'latitude', 'longitude']
     # not all types will have all variables, this will be dealt with later
 
     cubelist = read_data(source, station_number, time, variables, dtype, lead_time)

@@ -7,6 +7,7 @@ import iris
 from re_grid import re_grid_trop_0
 from process_data import add_gradient_fields
 import time
+import numpy as np
 
 #from iris.experimental.equalise_cubes import equalise_attributes
 #from iris.util import unify_time_units
@@ -43,6 +44,15 @@ def create_datetime_list(source, station_number):
             # Only launches which will be compared to model time 00 or 12
             # In order to have UKMO forecasts to compare to at 1, 3 and 5 day lead times
             datetime_list.append(dto)
+            
+    #the follwing is needed to ensure that when rounded to the nearest 6-hours,
+    #times are unique and the arrays can be concatenated
+    datetime_array = np.array(datetime_list)
+    datetime_differences = datetime_array[1:] - datetime_array[:-1]
+    too_close = np.nonzero(datetime_differences < datetime.timedelta(hours = 3))[0]
+    
+    if too_close:
+        datetime_list = list(np.delete(datetime_array, too_close + 1))
 
     return datetime_list
 

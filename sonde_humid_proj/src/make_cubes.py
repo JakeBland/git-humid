@@ -103,9 +103,6 @@ def theta_gradient_cube(cubelist):
     """
     theta = cubelist.extract(iris.Constraint(name = 'air_potential_temperature'))[0]
     altitude = cubelist.extract(iris.Constraint(name = 'altitude'))[0]
-    
-    print theta
-    print altitude
 
     dthetadz = calculate.array_gradient_axis1(theta.data, altitude.data)
 
@@ -147,7 +144,6 @@ def q_gradient_cube(cubelist):
                      second dimension height, containing specific humidity
     :return: cube of vertical specific humidity gradient
     """
-    print cubelist
     spec_hum = cubelist.extract(iris.Constraint(name='specific_humidity'))[0]
     altitude = cubelist.extract(iris.Constraint(name='altitude'))[0]
 
@@ -229,7 +225,10 @@ def difference_fields_selective(cubelist, sonde_cubelist, variable_name):
     # expect either 'variable_difference', 'variable_fractional_difference' or
     # 'variable_normalised_difference'
 
-    if 'fractional' or 'normalised' in variable_name:
+    print cubelist
+    print sonde_cubelist
+
+    if 'fractional' in variable_name or 'normalised' in variable_name:
 
         variable = variable_name[:-22]
         # remove string '_fractional_difference' or '_normalised_difference' from the end
@@ -238,10 +237,15 @@ def difference_fields_selective(cubelist, sonde_cubelist, variable_name):
 
         variable = variable_name[:-11]
         # remove string '_difference' from the end
-
-    cube = cubelist.extract(iris.Constraint(name=variable))
-    reference_cube = sonde_cubelist.extract(iris.Constraint(name=variable))
+        
+    print variable
+        
+    cube = cubelist.extract(iris.Constraint(name=variable))[0]
+    reference_cube = sonde_cubelist.extract(iris.Constraint(name=variable))[0]
     # extract cubes
+    
+    print cube
+    print reference_cube
 
     difference = cube - reference_cube
 
